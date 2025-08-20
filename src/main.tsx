@@ -7,6 +7,9 @@ import Login from "./pages/login";
 import Signup from "./pages/signup";
 import Splash from "./pages/splash";
 import OnboardingPage from "./pages/onboarding";
+import TeacherLogin from "./pages/teacher/login";
+import TeacherHome from "./pages/teacher/Home";
+import TeacherProtectedRoute from "./components/TeacherProtectedRoute";
 import './index.css'
 import { Toaster } from 'react-hot-toast';
 const rootElement = document.getElementById("root");
@@ -42,6 +45,7 @@ if (rootElement) {
           <Route path="/" element={<Splash />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/teacher/login" element={<TeacherLogin />} />
 
           {/* Protected Routes */}
           <Route
@@ -53,6 +57,8 @@ if (rootElement) {
             }
           />
 
+
+
           <Route
             path="/onboarding"
             element={
@@ -62,7 +68,15 @@ if (rootElement) {
             }
           />
 
-          {/* add more protected routes here */}
+          {/* teacher routes here */}
+          <Route
+            path="/teacher/home"
+            element={
+              <TeacherProtectedRoute>
+                <TeacherHome />
+              </TeacherProtectedRoute>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </React.StrictMode>
