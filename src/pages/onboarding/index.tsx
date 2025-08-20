@@ -9,7 +9,7 @@ import { onboardingSchema } from "./schema";
 // 👇 Import the new structured data and types
 import { allowedCombinations,type Division } from "./classData"; 
 import { useNavigate } from "react-router-dom";
-
+import { updateProfile } from "firebase/auth";
 import {
   Card,
   CardContent,
@@ -33,7 +33,7 @@ type FormData = z.infer<typeof onboardingSchema>;
 export default function OnboardingPage() {
   // State to hold the divisions available for the selected branch
   const [availableDivisions, setAvailableDivisions] = useState<Division[]>([]);
-
+  const [submitting , setSubmitting] = useState(false);
   const {
     register,
     handleSubmit,
@@ -66,12 +66,17 @@ export default function OnboardingPage() {
     setAvailableDivisions(selectedBranchData?.divisions || []);
   };
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = async (data: FormData) => {
+    setSubmitting(true);
     // 👇 Logic is now simpler: combine if division exists, otherwise just use branch code
     const payload = {
       ...data,
       class_code: data.division ? `${data.branch}${data.division}` : data.branch,
     };
+    
+    if(auth.currentUser){
+      await updateProfile(auth.currentUser, {displayName:data.name});
+    }
 
     axiosInstance.post("/user/onboard", payload)
       .then(() => {
@@ -82,7 +87,11 @@ export default function OnboardingPage() {
       .catch((error) => {
         toast.error("Error occurred during onboarding.");
         console.error("Error:", error);
+      })
+      .finally(() => {
+        setSubmitting(false);
       });
+
   };
 
   return (
@@ -166,7 +175,7 @@ export default function OnboardingPage() {
               )}
             </div>
 
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" disabled={submitting}>
               Complete Onboarding
             </Button>
           </form>
