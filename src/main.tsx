@@ -16,10 +16,13 @@ import TeacherLogin from "./pages/teacher/login";
 import TeacherHome from "./pages/teacher/Home";
 import ClassDetails from "./pages/teacher/class/Class";
 
+import AdminHome from "./pages/admin";
+
 // Styles & Utils
 import './index.css'
 import { Toaster } from 'react-hot-toast';
 import Layout from "./components/Layout";
+import AdminProtectedRoute from "./components/AdminProtectedRoute";
 // This new component will contain the routes and the animation logic
 const AppRoutes = () => {
   const location = useLocation();
@@ -68,6 +71,16 @@ const AppRoutes = () => {
               <TeacherProtectedRoute>
                 <PageTransition><ClassDetails /></PageTransition>
               </TeacherProtectedRoute>
+            }
+          />
+
+           {/* Teacher Protected Pages */}
+          <Route
+            path="/teacher/admin/home"
+            element={
+              <AdminProtectedRoute>
+                <PageTransition><AdminHome /></PageTransition>
+              </AdminProtectedRoute>
             }
           />
         </Routes>

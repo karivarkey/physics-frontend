@@ -2,13 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { 
-  LogOut, 
-  LifeBuoy, 
-  Settings, 
-  LayoutDashboard,
-  Atom
-} from "lucide-react";
+import { LogOut, LifeBuoy, Settings, LayoutDashboard, Zap } from "lucide-react";
 import { auth } from "@/lib/firebase";
 import {
   DropdownMenu,
@@ -37,7 +31,7 @@ const Header = () => {
   const [userEmail, setUserEmail] = useState<string>("guest@example.com");
   const [userImage, setUserImage] = useState<string | null>(null);
   const [isTeacher, setIsTeacher] = useState<boolean>(false);
-
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -50,7 +44,11 @@ const Header = () => {
         try {
           const tokenResult = await getIdTokenResult(user);
           const teacherClaim = tokenResult.claims.teacher;
-          setIsTeacher(typeof teacherClaim === "boolean" ? teacherClaim : false);
+          const adminClaim = tokenResult.claims.admin;
+          setIsTeacher(
+            typeof teacherClaim === "boolean" ? teacherClaim : false
+          );
+          setIsAdmin(typeof adminClaim === "boolean" ? adminClaim : false);
         } catch (err) {
           console.error("Error fetching claims:", err);
         }
@@ -68,8 +66,7 @@ const Header = () => {
   const initials = getInitials(userName || "GU");
 
   // 👇 centralized helper
-  const route = (path: string) =>
-    isTeacher ? `/teacher${path}` : path;
+  const route = (path: string) => (isTeacher ? `/teacher${path}` : path);
 
   return (
     <motion.header
@@ -79,7 +76,7 @@ const Header = () => {
       className="sticky top-0 z-50 flex h-16 w-full items-center justify-between border-b border-border/40 bg-background/95 px-6 backdrop-blur-sm"
     >
       {/* Left Section - Branding */}
-      
+
       <Logo />
       {/* Right Section - User Menu */}
       <motion.div
@@ -115,6 +112,15 @@ const Header = () => {
                 <span>Home</span>
                 <DropdownMenuShortcut>⇧⌘D</DropdownMenuShortcut>
               </DropdownMenuItem>
+              {isAdmin && (
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={() => navigate(route("/admin/home"))}
+                >
+                  <Zap className="mr-2 h-4 w-4" />
+                  <span>Admin Settings</span>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem
                 className="cursor-pointer"
                 onClick={() => navigate(route("/settings"))}
