@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Header from "@/components/home/header/Header";
+
 import { auth } from "@/lib/firebase";
 import axiosInstance from "@/lib/axios";
 import {
@@ -28,7 +28,7 @@ const TeacherHome = () => {
   const [classes, setClasses] = useState<ClassData[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const userName = auth.currentUser?.displayName || "Teacher";
+  
   const userEmail = auth.currentUser?.email || "";
   const navigate = useNavigate();
   useEffect(() => {
@@ -49,7 +49,7 @@ const TeacherHome = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-tr from-gray-50 to-gray-100">
-      <Header userEmail={userEmail} userName={userName} teacher={true} />
+      
 
       <main className="max-w-5xl mx-auto px-4 py-10">
         <h1 className="text-3xl font-bold mb-6">Your Classes</h1>

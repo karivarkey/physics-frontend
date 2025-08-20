@@ -14,68 +14,68 @@ import Splash from "./pages/splash";
 import OnboardingPage from "./pages/onboarding";
 import TeacherLogin from "./pages/teacher/login";
 import TeacherHome from "./pages/teacher/Home";
+import ClassDetails from "./pages/teacher/class/Class";
 
 // Styles & Utils
 import './index.css'
 import { Toaster } from 'react-hot-toast';
-
+import Layout from "./components/Layout";
 // This new component will contain the routes and the animation logic
 const AppRoutes = () => {
   const location = useLocation();
 
   return (
-    // AnimatePresence is the key to enabling exit animations
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        {/* Each page is now wrapped with our PageTransition component */}
-        <Route 
-          path="/" 
-          element={<PageTransition><Splash /></PageTransition>} 
-        />
-        <Route 
-          path="/login" 
-          element={<PageTransition><Login /></PageTransition>} 
-        />
-        <Route 
-          path="/signup" 
-          element={<PageTransition><Signup /></PageTransition>} 
-        />
-        <Route 
-          path="/teacher/login" 
-          element={<PageTransition><TeacherLogin /></PageTransition>} 
-        />
+    <Layout>
+      {/* Layout always stays mounted */}
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          {/* Public Pages without header */}
+          <Route path="/" element={<PageTransition><Splash /></PageTransition>} />
+          <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
+          <Route path="/signup" element={<PageTransition><Signup /></PageTransition>} />
+          <Route path="/teacher/login" element={<PageTransition><TeacherLogin /></PageTransition>} />
 
-        {/* Protected Routes */}
-        <Route
-          path="/home"
-          element={
-            <ProtectedRoute>
-              <PageTransition><Home /></PageTransition>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/onboarding"
-          element={
-            <ProtectedRoute>
-              <PageTransition><OnboardingPage /></PageTransition>
-            </ProtectedRoute>
-          }
-        />
+          {/* Protected Pages */}
+          <Route
+            path="/home"
+            element={
+              <ProtectedRoute>
+                <PageTransition><Home /></PageTransition>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/onboarding"
+            element={
+              <ProtectedRoute>
+                <PageTransition><OnboardingPage /></PageTransition>
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Teacher Routes */}
-        <Route
-          path="/teacher/home"
-          element={
-            <TeacherProtectedRoute>
-              <PageTransition><TeacherHome /></PageTransition>
-            </TeacherProtectedRoute>
-          }
-        />
-      </Routes>
-    </AnimatePresence>
+          {/* Teacher Protected Pages */}
+          <Route
+            path="/teacher/home"
+            element={
+              <TeacherProtectedRoute>
+                <PageTransition><TeacherHome /></PageTransition>
+              </TeacherProtectedRoute>
+            }
+          />
+          <Route
+            path="/teacher/class/:classId"
+            element={
+              <TeacherProtectedRoute>
+                <PageTransition><ClassDetails /></PageTransition>
+              </TeacherProtectedRoute>
+            }
+          />
+        </Routes>
+      </AnimatePresence>
+    </Layout>
   );
 };
+
 
 const rootElement = document.getElementById("root");
 if (rootElement) {
@@ -83,7 +83,7 @@ if (rootElement) {
     <React.StrictMode>
       <BrowserRouter>
         <Toaster
-          position="top-right"
+          position="bottom-left"
           toastOptions={{
             style: {
               background: '#fff',
