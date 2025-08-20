@@ -6,6 +6,7 @@ import Home from "./pages/home";
 import Login from "./pages/login";
 import Signup from "./pages/signup";
 import Splash from "./pages/splash";
+import OnboardingPage from "./pages/onboarding";
 import './index.css'
 import { Toaster } from 'react-hot-toast';
 const rootElement = document.getElementById("root");
@@ -40,7 +41,7 @@ if (rootElement) {
         <Routes>
           <Route path="/" element={<Splash />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+            
 
           {/* Protected Routes */}
           <Route
@@ -51,6 +52,16 @@ if (rootElement) {
               </ProtectedRoute>
             }
           />
+
+          <Route
+            path="/onboarding"
+            element={
+              <ProtectedRoute>
+                <OnboardingPage />
+              </ProtectedRoute>
+            }
+          />
+
           {/* add more protected routes here */}
         </Routes>
       </BrowserRouter>
