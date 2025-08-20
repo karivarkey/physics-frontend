@@ -11,6 +11,7 @@ import {
 } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import axiosInstance from '@/lib/axios';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -23,8 +24,34 @@ const Login = () => {
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      
+      if(auth.currentUser?.email && !auth.currentUser.email.endsWith('@rajagiri.edu.in') ) {
+        await auth.signOut();
+        toast.error('Please use your Rajagiri email address');
+        return;
+      }
+
+      if (!auth.currentUser?.emailVerified){
+        await auth.signOut();
+        toast.error('Please verify your email address');
+        return;
+      }
+
+      const onboard = (await axiosInstance.get(`/user/check/onboard`)).data.isOnboarded;
+
       toast.success('Logged in successfully!');
-      navigate('/dashboard');
+      if (onboard) {
+        // User is onboarded, navigate to dashboard
+        
+        navigate('/dashboard');
+      }else{
+        navigate('/onboarding');
+      }
+    
+
+      
+
+      
     } catch (err: any) {
       toast.error(err.message || 'Something went wrong.');
     } finally {
