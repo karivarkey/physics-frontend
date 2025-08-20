@@ -15,6 +15,7 @@ const Signup = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,9 +95,9 @@ const Signup = () => {
 
             <p className="mt-4 text-center text-sm text-gray-500">
               Already have an account?{' '}
-              <a href="/login" className="text-black underline">
+              <button onClick={() => navigate('/login')} className="text-black underline">
                 Sign in
-              </a>
+              </button>
             </p>
           </CardContent>
         </Card>

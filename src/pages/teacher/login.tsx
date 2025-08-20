@@ -118,18 +118,12 @@ const TeacherLogin = () => {
               Sign in with Google
             </Button>
 
-            <p className="mt-4 text-center text-sm text-gray-500">
-              Don’t have an account?{" "}
-              <a href="/signup" className="text-black underline">
-                Sign up
-              </a>
-            </p>
 
             <p className="mt-4 text-center text-sm text-gray-500">
               Not a teacher?{" "}
-              <a href="/login" className="text-black underline">
+              <button onClick={() => navigate('/login')} className="text-black underline">
                 Login as Student
-              </a>
+              </button>
             </p>
           </CardContent>
         </Card>

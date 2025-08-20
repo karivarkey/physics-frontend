@@ -137,15 +137,15 @@ const Login = () => {
 
             <p className="mt-4 text-center text-sm text-gray-500">
               Don’t have an account?{' '}
-              <a href="/signup" className="text-black underline">
+              <button onClick={() => navigate('/signup')} className="text-black underline">
                 Sign up
-              </a>
+              </button>
             </p>
             <p className="mt-4 text-center text-sm text-gray-500">
               Not a student?{' '}
-              <a href="/teacher/login" className="text-black underline">
+              <button onClick={() => navigate('/teacher/login')} className="text-black underline">
                 Login as Teacher
-              </a>
+              </button>
             </p>
           </CardContent>
         </Card>
