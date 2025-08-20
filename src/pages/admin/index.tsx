@@ -4,16 +4,17 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"; // Rea
 import { cn } from "@/lib/utils";
 
 import AdminStudents from "@/components/admin/students";
+import AdminQuestions from "@/components/admin/experiments";
 // Demo tab components (replace with real ones)
 
 const TeachersTab = () => <div>👨‍🏫 Teachers Management (Demo Content)</div>;
-const QuestionsTab = () => <div>❓ Questions Bank (Demo Content)</div>;
+
 const MarksTab = () => <div>📝 Marks Overview (Demo Content)</div>;
 
 const tabs = [
   { id: "students", label: "Students", component: AdminStudents },
   { id: "teachers", label: "Teachers", component: TeachersTab },
-  { id: "questions", label: "Questions", component: QuestionsTab },
+  { id: "questions", label: "Questions", component: AdminQuestions },
   { id: "marks", label: "Marks", component: MarksTab },
 ];
 
