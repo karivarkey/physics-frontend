@@ -141,6 +141,12 @@ const Login = () => {
                 Sign up
               </a>
             </p>
+            <p className="mt-4 text-center text-sm text-gray-500">
+              Not a student?{' '}
+              <a href="/teacher/login" className="text-black underline">
+                Login as Teacher
+              </a>
+            </p>
           </CardContent>
         </Card>
       </motion.div>
