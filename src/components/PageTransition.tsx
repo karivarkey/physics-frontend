@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { easeInOut, motion } from "framer-motion";
 import type { PropsWithChildren } from "react";
 
 const pageVariants = {
@@ -18,8 +18,8 @@ const pageVariants = {
 
 const pageTransition = {
   type: 'tween' as const,
-  
-  duration: 0.4,
+  ease: easeInOut,
+  duration: 0.2,
 };
 
 export default function PageTransition({ children }: PropsWithChildren) {
