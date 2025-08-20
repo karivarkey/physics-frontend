@@ -54,10 +54,17 @@ const TeacherLogin = () => {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
-      const userEmail = result.user.email;
-
-      toast.success("Logged in with Google!");
-      navigate("/dashboard");
+      const user = result.user;
+      if (user) {
+        const idTokenResult = await getIdTokenResult(user);
+        const isTeacher = idTokenResult.claims.teacher;
+        if (isTeacher) {
+          toast.success("Logged in with Google!");
+          navigate("/teacher/home");
+        } else {
+          toast.error("User is not registered as a teacher , please contact admin");
+        }
+      }
     } catch (err: any) {
       toast.error(err.message || "Google sign-in failed.");
     } finally {
