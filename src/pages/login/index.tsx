@@ -43,7 +43,7 @@ const Login = () => {
       if (onboard) {
         // User is onboarded, navigate to dashboard
         
-        navigate('/dashboard');
+        navigate('/home');
       }else{
         navigate('/onboarding');
       }
