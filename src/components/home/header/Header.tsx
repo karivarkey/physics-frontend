@@ -6,7 +6,7 @@ import {
   LifeBuoy, 
   Settings, 
   LayoutDashboard,
-  Atom // Added for the new logo
+  Atom
 } from "lucide-react";
 import { auth } from "@/lib/firebase";
 import {
@@ -20,7 +20,6 @@ import {
   DropdownMenuShortcut,
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { signOut } from "firebase/auth";
 import { toast } from "react-hot-toast";
@@ -29,9 +28,9 @@ type Props = {
   userName?: string | null;
   userEmail?: string | null;
   userImage?: string | null;
+  teacher?: boolean | false;
 };
 
-// Function to get initials from a name for the Avatar fallback
 const getInitials = (name: string) => {
   return name
     .split(" ")
@@ -44,9 +43,15 @@ const Header = ({
   userName = "Guest User",
   userEmail = "guest@example.com",
   userImage,
+  teacher = false,
 }: Props) => {
   const initials = getInitials(userName || "GU");
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+
+  // 👇 centralized helper
+  const route = (path: string) =>
+    teacher ? `/teacher${path}` : path;
+
   return (
     <motion.header
       initial={{ y: -60, opacity: 0 }}
@@ -54,20 +59,20 @@ const Header = ({
       transition={{ duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
       className="sticky top-0 z-50 flex h-16 w-full items-center justify-between border-b border-border/40 bg-background/95 px-6 backdrop-blur-sm"
     >
-      {/* Left Section - Polished Logo & Branding */}
+      {/* Left Section - Branding */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.2, duration: 0.4 }}
       >
-        <a href="/dashboard" className="flex items-center gap-2.5">
+        <a href={route("/dashboard")} className="flex items-center gap-2.5">
           <Atom className="h-7 w-7 text-blue-500" />
           <div className="flex flex-col">
             <span className="text-xl font-bold tracking-tighter bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
               RSET LABS
             </span>
             <span className="text-xs text-muted-foreground -mt-1">
-              Simulating Tomorrow's Breakthroughs
+              Simulating Tomorrow&apos;s Breakthroughs
             </span>
           </div>
         </a>
@@ -99,41 +104,40 @@ const Header = ({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem className="cursor-pointer" onClick={() => {
-                navigate('/dashboard');
-              }} disabled={true}>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => navigate(route("/home"))}
+              >
                 <LayoutDashboard className="mr-2 h-4 w-4" />
-                <span>Dashboard</span>
+                <span>Home</span>
                 <DropdownMenuShortcut>⇧⌘D</DropdownMenuShortcut>
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer"
-              onClick={() => {
-                navigate('/settings');
-              }}>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => navigate(route("/settings"))}
+              >
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Settings</span>
                 <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer"
-            onClick={() => {
-                navigate('/support');
-              }}>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => navigate(route("/support"))}
+            >
               <LifeBuoy className="mr-2 h-4 w-4" />
               <span>Support</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer text-red-500 focus:bg-red-50 focus:text-red-600"
-              onClick={() =>{
-                toast.promise(
-                  signOut(auth),
-                  {
-                    loading: "Signing out...",
-                    success: "Signed out successfully!",
-                    error: "Error signing out.",
-                  }
-                );
+            <DropdownMenuItem
+              className="cursor-pointer text-red-500 focus:bg-red-50 focus:text-red-600"
+              onClick={() => {
+                toast.promise(signOut(auth), {
+                  loading: "Signing out...",
+                  success: "Signed out successfully!",
+                  error: "Error signing out.",
+                });
               }}
             >
               <LogOut className="mr-2 h-4 w-4" />
