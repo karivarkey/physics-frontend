@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { 
   LogOut, 
@@ -21,36 +22,54 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { signOut } from "firebase/auth";
+import { signOut, onAuthStateChanged, getIdTokenResult } from "firebase/auth";
 import { toast } from "react-hot-toast";
-
-type Props = {
-  userName?: string | null;
-  userEmail?: string | null;
-  userImage?: string | null;
-  teacher?: boolean | false;
-};
-
-const getInitials = (name: string) => {
-  return name
+import Logo from "./Logo";
+const getInitials = (name: string) =>
+  name
     .split(" ")
     .map((n) => n[0])
     .slice(0, 2)
     .join("");
-};
 
-const Header = ({
-  userName = "Guest User",
-  userEmail = "guest@example.com",
-  userImage,
-  teacher = false,
-}: Props) => {
-  const initials = getInitials(userName || "GU");
+const Header = () => {
+  const [userName, setUserName] = useState<string>("Guest User");
+  const [userEmail, setUserEmail] = useState<string>("guest@example.com");
+  const [userImage, setUserImage] = useState<string | null>(null);
+  const [isTeacher, setIsTeacher] = useState<boolean>(false);
+
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setUserName(user.displayName || "Anonymous");
+        setUserEmail(user.email || "unknown@example.com");
+        setUserImage(user.photoURL);
+
+        try {
+          const tokenResult = await getIdTokenResult(user);
+          const teacherClaim = tokenResult.claims.teacher;
+          setIsTeacher(typeof teacherClaim === "boolean" ? teacherClaim : false);
+        } catch (err) {
+          console.error("Error fetching claims:", err);
+        }
+      } else {
+        setUserName("Guest User");
+        setUserEmail("guest@example.com");
+        setUserImage(null);
+        setIsTeacher(false);
+      }
+    });
+
+    return () => unsub();
+  }, []);
+
+  const initials = getInitials(userName || "GU");
 
   // 👇 centralized helper
   const route = (path: string) =>
-    teacher ? `/teacher${path}` : path;
+    isTeacher ? `/teacher${path}` : path;
 
   return (
     <motion.header
@@ -60,24 +79,8 @@ const Header = ({
       className="sticky top-0 z-50 flex h-16 w-full items-center justify-between border-b border-border/40 bg-background/95 px-6 backdrop-blur-sm"
     >
       {/* Left Section - Branding */}
-      <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.2, duration: 0.4 }}
-      >
-        <a href={route("/dashboard")} className="flex items-center gap-2.5">
-          <Atom className="h-7 w-7 text-blue-500" />
-          <div className="flex flex-col">
-            <span className="text-xl font-bold tracking-tighter bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
-              RSET LABS
-            </span>
-            <span className="text-xs text-muted-foreground -mt-1">
-              Simulating Tomorrow&apos;s Breakthroughs
-            </span>
-          </div>
-        </a>
-      </motion.div>
-
+      
+      <Logo />
       {/* Right Section - User Menu */}
       <motion.div
         initial={{ opacity: 0, x: 20 }}
