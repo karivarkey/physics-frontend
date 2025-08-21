@@ -42,7 +42,7 @@ type Experiment = {
 
 // --- API Functions ---
 const fetchExperiments = async (): Promise<Experiment[]> => {
-  const { data } = await axiosInstance.get("/user/experiments");
+  const { data } = await axiosInstance.get("/admin/experiments");
   return data;
 };
 
