@@ -74,7 +74,7 @@ const Login = () => {
       }
 
       toast.success('Logged in with Google!');
-      navigate('/dashboard');
+      navigate('/home');
     } catch (err: any) {
       toast.error(err.message || 'Google sign-in failed.');
     } finally {
