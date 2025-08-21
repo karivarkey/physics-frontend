@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "@/lib/axios";
 import toast from "react-hot-toast";
 import { Trash2, Plus } from "lucide-react";
-
+import { useNavigate } from "react-router-dom";
 // Import shadcn/ui components
 import {
   AlertDialog,
@@ -106,6 +106,8 @@ const AdminQuestions = () => {
     createMutation.mutate({ title: newTitle, description: newDescription });
   };
 
+  const navigate = useNavigate();
+
 
   if (isLoading) return <div className="p-6">Loading experiments...</div>;
   if (isError) return <div className="p-6 text-red-500">Failed to load experiments</div>;
@@ -123,7 +125,9 @@ const AdminQuestions = () => {
               {experiment.status && (<span className={`mt-3 inline-block px-2 py-1 text-xs font-medium rounded ${ experiment.status === "active" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-700" }`}>{experiment.status}</span>)}
             </div>
             <div className="mt-4 flex gap-2">
-              <Button asChild className="flex-1"><a href={`/admin/experiment/${experiment.id}`}>Open</a></Button>
+              <Button className="flex-1  w-full"
+              onClick={() => {navigate(`/admin/experiment/${experiment.id}`)}}
+              >Open</Button>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button variant="destructive" className="px-3" title="Delete Experiment" disabled={deleteMutation.isPending}><Trash2 size={16} /></Button>
