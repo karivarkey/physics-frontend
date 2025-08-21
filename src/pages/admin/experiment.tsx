@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid'; // <-- Import uuid to generate unique IDs
 import axiosInstance from "@/lib/axios";
 import type { Experiment, Question, TextQuestion, TableQuestion } from "./types";
 import { QuestionEditor } from "./QuestionEditor";
+import toast from "react-hot-toast";
 
 // ---------- Main Component ----------
 const EditExperiment = () => {
@@ -23,7 +24,10 @@ const EditExperiment = () => {
 
     axiosInstance
       .get(`/user/experiment/${id}`)
-      .then((res) => setExperiment(res.data))
+      .then((res) => {
+        console.log("Fetched experiment data:", res.data.questions.questions);
+
+        setExperiment(res.data)})
       .catch(err => {
           console.error("Failed to fetch experiment data:", err);
       })
@@ -89,19 +93,20 @@ const EditExperiment = () => {
   };
 
   const handleSave = () => {
-    console.log("Saving this JSON to the server:", JSON.stringify(experiment, null, 2));
-    axiosInstance.put(`/user/experiment/${id}`, experiment)
-        .then(() => alert("Experiment saved successfully!"))
-        .catch(err => alert(`Error saving: ${err.message}`));
+    
+    console.log({id, experiment: experiment?.questions})
+    axiosInstance.put(`/admin/update-question`, {id, experiment: experiment?.questions})
+        .then(() => toast.success("Experiment saved successfully!"))
+        .catch(err => toast.error(`Error saving: ${err.message}`));
   };
 
   if (loading) return <div className="p-6">Loading experiment...</div>;
   if (!experiment) return <div className="p-6 text-red-500">Experiment not found</div>;
 
   return (
-    <div className="flex gap-8 p-6">
+    <div className="flex gap-8 p-6 max-h-screen overflow-y-clip ">
       {/* ----- Left Side: The Editor UI ----- */}
-      <div className="w-2/3 space-y-6">
+      <div className="w-2/3 space-y-6 overflow-y-scroll pb-20">
         <h2 className="text-2xl font-bold">Edit Experiment</h2>
         <div>
           <label className="block text-sm font-medium text-gray-700">Title</label>
