@@ -6,7 +6,7 @@ import { AnimatePresence } from "framer-motion";
 // --- NEW: Import TanStack Query ---
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-
+import AnswerExperiment from "./pages/experiment/AnswerExperiment";
 // Components & Pages (your existing imports)
 import ProtectedRoute from "./components/ProtectedRoute";
 import TeacherProtectedRoute from "./components/TeacherProtectedRoute";
@@ -62,6 +62,16 @@ const AppRoutes = () => {
               </ProtectedRoute>
             }
           />
+          
+          <Route
+            path="/experiment/:id"
+            element={
+              <ProtectedRoute>
+                <PageTransition><AnswerExperiment /></PageTransition>
+              </ProtectedRoute>
+            }
+          />
+
           <Route
             path="/teacher/home"
             element={
