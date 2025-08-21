@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import toast from "react-hot-toast";
@@ -211,7 +211,7 @@ const EditExperiment = () => {
       <div className="flex-1 flex flex-col h-full">
         <div className="p-4 flex items-center justify-between border-b border-border bg-background/50 backdrop-blur-sm">
             <div className="space-y-1 flex-1">
-                <Input type="text" value={experiment.title} onChange={(e) => setExperiment({ ...experiment, title: e.target.value })} placeholder="Experiment Title" className="text-lg font-bold h-10 !text-base border-0 shadow-none focus-visible:ring-0 px-0"/>
+                <Input type="text" value={experiment.title} onChange={(e) => setExperiment({ ...experiment, title: e.target.value })} placeholder="Experiment Title" className=" font-bold h-10 !text-base border-0 shadow-none focus-visible:ring-0 px-0"/>
                 <Textarea value={experiment.description ?? ""} onChange={(e) => setExperiment({ ...experiment, description: e.target.value })} placeholder="Add a description..." className="text-sm text-muted-foreground border-0 shadow-none focus-visible:ring-0 resize-none p-0"/>
             </div>
             <Button onClick={handleSave}>Save Changes</Button>
