@@ -1,26 +1,22 @@
-// src/components/EditExperiment.tsx
 "use client";
 
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-// --- Mocks for demonstration since we don't have the API/router setup ---
-// import { useParams } from "react-router-dom";
-// import axiosInstance from "@/lib/axios";
+import { v4 as uuidv4 } from 'uuid'; // <-- Import uuid to generate unique IDs
 
 import axiosInstance from "@/lib/axios";
-import type { Experiment, Question } from "./types"; // We'll create a types file
+import type { Experiment, Question, TextQuestion, TableQuestion } from "./types";
 import { QuestionEditor } from "./QuestionEditor";
 
 // ---------- Main Component ----------
 const EditExperiment = () => {
-  // const { id } = useParams(); // Use this in your actual app
+  const { id } = useParams();
   const [experiment, setExperiment] = useState<Experiment | null>(null);
   const [loading, setLoading] = useState(true);
-  const { id } = useParams();
+
   useEffect(() => {
     if (!id) {
         setLoading(false);
-        // Handle case where ID is missing, maybe redirect or show an error
         console.error("No experiment ID found in URL.");
         return;
     };
@@ -30,17 +26,15 @@ const EditExperiment = () => {
       .then((res) => setExperiment(res.data))
       .catch(err => {
           console.error("Failed to fetch experiment data:", err);
-          // Optionally set an error state to show a message to the user
       })
       .finally(() => setLoading(false));
-  }, [id]); // Re-run the effect if the ID in the URL changes
+  }, [id]);
+
   const handleQuestionChange = (updatedQuestion: Question) => {
     if (!experiment) return;
-
     const updatedQuestions = experiment.questions.questions.map((q) =>
       q.id === updatedQuestion.id ? updatedQuestion : q
     );
-
     setExperiment({
       ...experiment,
       questions: { questions: updatedQuestions },
@@ -56,11 +50,49 @@ const EditExperiment = () => {
      });
   };
 
+  // --- NEW: Handler to add a new question ---
+  const handleAddQuestion = (type: 'text' | 'table') => {
+    if (!experiment) return;
+
+    let newQuestion: Question;
+
+    if (type === 'text') {
+      newQuestion = {
+        id: uuidv4(),
+        type: 'text',
+        prompt: 'New Text Question',
+        unit: 'units',
+        prefill: null,
+      } as TextQuestion;
+    } else {
+      // Default new table question
+      newQuestion = {
+        id: uuidv4(),
+        type: 'table',
+        prompt: 'New Table Question',
+        rowsLocked: false,
+        headers: [
+          { id: uuidv4(), key: 'c1', label: 'Column 1', colSpan: 1 },
+          { id: uuidv4(), key: 'c2', label: 'Column 2', colSpan: 1 }
+        ],
+        rows: [
+          { id: uuidv4(), values: { c1: '', c2: '' } }
+        ]
+      } as TableQuestion;
+    }
+
+    const updatedQuestions = [...experiment.questions.questions, newQuestion];
+    setExperiment({
+      ...experiment,
+      questions: { questions: updatedQuestions },
+    });
+  };
+
   const handleSave = () => {
     console.log("Saving this JSON to the server:", JSON.stringify(experiment, null, 2));
-    // Here you would make your API call, e.g.,
-    // axiosInstance.put(`/user/experiment/${id}`, experiment);
-    alert("Experiment data saved to the console!");
+    axiosInstance.put(`/user/experiment/${id}`, experiment)
+        .then(() => alert("Experiment saved successfully!"))
+        .catch(err => alert(`Error saving: ${err.message}`));
   };
 
   if (loading) return <div className="p-6">Loading experiment...</div>;
@@ -83,7 +115,7 @@ const EditExperiment = () => {
         <div>
           <label className="block text-sm font-medium text-gray-700">Description</label>
           <textarea
-            value={experiment.description}
+            value={experiment.description ?? ''}
             onChange={(e) => setExperiment({ ...experiment, description: e.target.value })}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2"
             rows={3}
@@ -100,6 +132,25 @@ const EditExperiment = () => {
             onDelete={handleQuestionDelete}
           />
         ))}
+
+        {/* ----- NEW: Add Question Section ----- */}
+        <div className="pt-4 border-t">
+            <h3 className="font-semibold mb-2">Add a new question</h3>
+            <div className="flex gap-4">
+                <button
+                    onClick={() => handleAddQuestion('text')}
+                    className="rounded-md bg-gray-200 px-4 py-2 text-gray-800 font-semibold hover:bg-gray-300"
+                >
+                    + Add Text Question
+                </button>
+                <button
+                    onClick={() => handleAddQuestion('table')}
+                    className="rounded-md bg-gray-200 px-4 py-2 text-gray-800 font-semibold hover:bg-gray-300"
+                >
+                    + Add Table Question
+                </button>
+            </div>
+        </div>
 
         <button
           onClick={handleSave}
