@@ -2,34 +2,42 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { v4 as uuidv4 } from 'uuid'; // <-- Import uuid to generate unique IDs
-
+import { v4 as uuidv4 } from "uuid"; // <-- Import uuid to generate unique IDs
+import { useNavigate } from "react-router-dom";
 import axiosInstance from "@/lib/axios";
-import type { Experiment, Question, TextQuestion, TableQuestion } from "./types";
+import type {
+  Experiment,
+  Question,
+  TextQuestion,
+  TableQuestion,
+} from "./types";
 import { QuestionEditor } from "./QuestionEditor";
 import toast from "react-hot-toast";
+import { StepBack } from "lucide-react";
 
 // ---------- Main Component ----------
 const EditExperiment = () => {
   const { id } = useParams();
   const [experiment, setExperiment] = useState<Experiment | null>(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!id) {
-        setLoading(false);
-        console.error("No experiment ID found in URL.");
-        return;
-    };
+      setLoading(false);
+      console.error("No experiment ID found in URL.");
+      return;
+    }
 
     axiosInstance
       .get(`/user/experiment/${id}`)
       .then((res) => {
         console.log("Fetched experiment data:", res.data.questions.questions);
 
-        setExperiment(res.data)})
-      .catch(err => {
-          console.error("Failed to fetch experiment data:", err);
+        setExperiment(res.data);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch experiment data:", err);
       })
       .finally(() => setLoading(false));
   }, [id]);
@@ -46,42 +54,42 @@ const EditExperiment = () => {
   };
 
   const handleQuestionDelete = (questionId: string) => {
-     if (!experiment) return;
-     const updatedQuestions = experiment.questions.questions.filter(q => q.id !== questionId);
-     setExperiment({
-       ...experiment,
-       questions: { questions: updatedQuestions },
-     });
+    if (!experiment) return;
+    const updatedQuestions = experiment.questions.questions.filter(
+      (q) => q.id !== questionId
+    );
+    setExperiment({
+      ...experiment,
+      questions: { questions: updatedQuestions },
+    });
   };
 
   // --- NEW: Handler to add a new question ---
-  const handleAddQuestion = (type: 'text' | 'table') => {
+  const handleAddQuestion = (type: "text" | "table") => {
     if (!experiment) return;
 
     let newQuestion: Question;
 
-    if (type === 'text') {
+    if (type === "text") {
       newQuestion = {
         id: uuidv4(),
-        type: 'text',
-        prompt: 'New Text Question',
-        unit: 'units',
+        type: "text",
+        prompt: "New Text Question",
+        unit: "units",
         prefill: null,
       } as TextQuestion;
     } else {
       // Default new table question
       newQuestion = {
         id: uuidv4(),
-        type: 'table',
-        prompt: 'New Table Question',
+        type: "table",
+        prompt: "New Table Question",
         rowsLocked: false,
         headers: [
-          { id: uuidv4(), key: 'c1', label: 'Column 1', colSpan: 1 },
-          { id: uuidv4(), key: 'c2', label: 'Column 2', colSpan: 1 }
+          { id: uuidv4(), key: "c1", label: "Column 1", colSpan: 1 },
+          { id: uuidv4(), key: "c2", label: "Column 2", colSpan: 1 },
         ],
-        rows: [
-          { id: uuidv4(), values: { c1: '', c2: '' } }
-        ]
+        rows: [{ id: uuidv4(), values: { c1: "", c2: "" } }],
       } as TableQuestion;
     }
 
@@ -93,35 +101,53 @@ const EditExperiment = () => {
   };
 
   const handleSave = () => {
-    
-    console.log({id, experiment: experiment?.questions})
-    axiosInstance.put(`/admin/update-question`, {id, experiment: experiment?.questions})
-        .then(() => toast.success("Experiment saved successfully!"))
-        .catch(err => toast.error(`Error saving: ${err.message}`));
+    console.log({ id, experiment: experiment?.questions });
+    axiosInstance
+      .put(`/admin/update-question`, { id, experiment: experiment?.questions })
+      .then(() => toast.success("Experiment saved successfully!"))
+      .catch((err) => toast.error(`Error saving: ${err.message}`));
   };
 
   if (loading) return <div className="p-6">Loading experiment...</div>;
-  if (!experiment) return <div className="p-6 text-red-500">Experiment not found</div>;
+  if (!experiment)
+    return <div className="p-6 text-red-500">Experiment not found</div>;
 
   return (
     <div className="flex gap-8 p-6 max-h-screen overflow-y-clip ">
       {/* ----- Left Side: The Editor UI ----- */}
-      <div className="w-2/3 space-y-6 overflow-y-scroll pb-20">
-        <h2 className="text-2xl font-bold">Edit Experiment</h2>
+      <div className="w-2/3 space-y-6 overflow-y-scroll pb-20 ">
+        <div className="flex items-center justify-start space-x-3">
+          <button
+            onClick={() => {
+              navigate(-1);
+            }}
+          >
+            <StepBack />
+          </button>
+          <h2 className="text-2xl font-bold">Edit Experiment</h2>
+        </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Title</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Title
+          </label>
           <input
             type="text"
             value={experiment.title}
-            onChange={(e) => setExperiment({ ...experiment, title: e.target.value })}
+            onChange={(e) =>
+              setExperiment({ ...experiment, title: e.target.value })
+            }
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-lg p-2"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Description</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Description
+          </label>
           <textarea
-            value={experiment.description ?? ''}
-            onChange={(e) => setExperiment({ ...experiment, description: e.target.value })}
+            value={experiment.description ?? ""}
+            onChange={(e) =>
+              setExperiment({ ...experiment, description: e.target.value })
+            }
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2"
             rows={3}
           />
@@ -140,21 +166,21 @@ const EditExperiment = () => {
 
         {/* ----- NEW: Add Question Section ----- */}
         <div className="pt-4 border-t">
-            <h3 className="font-semibold mb-2">Add a new question</h3>
-            <div className="flex gap-4">
-                <button
-                    onClick={() => handleAddQuestion('text')}
-                    className="rounded-md bg-gray-200 px-4 py-2 text-gray-800 font-semibold hover:bg-gray-300"
-                >
-                    + Add Text Question
-                </button>
-                <button
-                    onClick={() => handleAddQuestion('table')}
-                    className="rounded-md bg-gray-200 px-4 py-2 text-gray-800 font-semibold hover:bg-gray-300"
-                >
-                    + Add Table Question
-                </button>
-            </div>
+          <h3 className="font-semibold mb-2">Add a new question</h3>
+          <div className="flex gap-4">
+            <button
+              onClick={() => handleAddQuestion("text")}
+              className="rounded-md bg-gray-200 px-4 py-2 text-gray-800 font-semibold hover:bg-gray-300"
+            >
+              + Add Text Question
+            </button>
+            <button
+              onClick={() => handleAddQuestion("table")}
+              className="rounded-md bg-gray-200 px-4 py-2 text-gray-800 font-semibold hover:bg-gray-300"
+            >
+              + Add Table Question
+            </button>
+          </div>
         </div>
 
         <button
