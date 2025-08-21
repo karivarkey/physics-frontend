@@ -34,13 +34,20 @@ const ClassDetails = () => {
             value="students"
             className="px-6 py-2 rounded-full transition-all data-[state=active]:bg-gray-900 data-[state=active]:shadow-md data-[state=active]:text-white text-gray-300"
           >
-            Students
+            Students wise
+          
           </TabsTrigger>
           <TabsTrigger
             value="experiments"
             className="px-6 py-2 rounded-full transition-all data-[state=active]:bg-gray-900 data-[state=active]:shadow-md data-[state=active]:text-white text-gray-300"
           >
-            Experiments
+            Experiment wise
+          </TabsTrigger>
+          <TabsTrigger
+            value="groups"
+            className="px-6 py-2 rounded-full transition-all data-[state=active]:bg-gray-900 data-[state=active]:shadow-md data-[state=active]:text-white text-gray-300"
+          >
+            Group wise
           </TabsTrigger>
         </TabsList>
 
