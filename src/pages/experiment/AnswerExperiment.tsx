@@ -48,7 +48,7 @@ const submitExperiment = async (submission: {
   answers: Record<string, any>;
 }) => {
   const { data } = await axiosInstance.post(
-    "/user/submit-experiment",
+    "/user/submit-answer",
     submission
   );
   return data;
