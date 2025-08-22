@@ -1,7 +1,22 @@
-import React, { useEffect, useMemo ,useState} from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import type { TableHeader, TableQuestion, TableRow } from "./types";
 import { ensureHeaderIds } from "./tableUtils";
+
+// --- NEW: SVG Icons for Lock/Unlock state for better UI ---
+const LockClosedIcon = () => (
+  <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+    <path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" />
+  </svg>
+);
+
+const LockOpenIcon = () => (
+  <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+    <path d="M10 2a5 5 0 00-5 5v1h1a1 1 0 011 1v3a1 1 0 01-2 0V7a3 3 0 016 0v3a1 1 0 01-2 0V7a1 1 0 011-1h1V7a5 5 0 00-5-5z" />
+    <path d="M5 10a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2H5zm1 4a1 1 0 11-2 0 1 1 0 012 0z" />
+  </svg>
+);
+
 
 // --- Main Editor Component ---
 export const TableQuestionEditor: React.FC<{
@@ -68,6 +83,24 @@ export const TableQuestionEditor: React.FC<{
     findKeys(question.headers);
     return keys;
   }, [question.headers]);
+  
+  // --- NEW: Memoized map for column editability state ---
+  const columnEditableMap = useMemo(() => {
+    const map = new Map<string, boolean>();
+    const findEditableKeys = (headers: TableHeader[]) => {
+        headers.forEach(h => {
+            if (h.children && h.children.length > 0) {
+                findEditableKeys(h.children);
+            } else if (h.key) {
+                // A column is editable if its isEditable property is true or undefined.
+                map.set(h.key, h.isEditable ?? true);
+            }
+        });
+    };
+    findEditableKeys(question.headers);
+    return map;
+  }, [question.headers]);
+
 
   // --- Handlers for Table Structure Manipulation ---
 
@@ -163,6 +196,23 @@ export const TableQuestionEditor: React.FC<{
     };
     onChange({ ...question, headers: updateRecursive(question.headers) });
   };
+  
+  // --- NEW: Handler to toggle a column's editable state ---
+  const handleToggleColumnEditable = (headerId: string) => {
+    const toggleRecursive = (headers: TableHeader[]): TableHeader[] => {
+        return headers.map(h => {
+            if (h.id === headerId) {
+                // Toggle 'isEditable'. If undefined, it's treated as true, so new value is false.
+                return { ...h, isEditable: !(h.isEditable ?? true) };
+            }
+            if (h.children) {
+                return { ...h, children: toggleRecursive(h.children) };
+            }
+            return h;
+        });
+    };
+    onChange({ ...question, headers: toggleRecursive(question.headers) });
+  };
 
   const handleCellChange = (rowId: string, columnKey: string, value: string) => {
     const updatedRows = question.rows.map(row => {
@@ -186,7 +236,7 @@ export const TableQuestionEditor: React.FC<{
 
   const handleAddColumn = () => {
     const newKey = `col_${uuidv4().slice(0, 4)}`;
-    const newHeader: TableHeader = { id: uuidv4(), key: newKey, label: "New Column", colSpan: 1 };
+    const newHeader: TableHeader = { id: uuidv4(), key: newKey, label: "New Column", colSpan: 1, isEditable: true };
     const newRows = question.rows.map(row => ({
       ...row, values: { ...row.values, [newKey]: '' }
     }));
@@ -210,9 +260,7 @@ export const TableQuestionEditor: React.FC<{
             <input 
                 id="lock-rows-toggle" 
                 type="checkbox" 
-                // Read the lock state directly from the question prop
                 checked={question.rowsLocked ?? false} 
-                // Update the question object when toggled
                 onChange={(e) => onChange({ ...question, rowsLocked: e.target.checked })}
                 className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
@@ -229,7 +277,21 @@ export const TableQuestionEditor: React.FC<{
                     <div className="flex items-start justify-between gap-1">
                       <input type="checkbox" title="Select for grouping" checked={selectedHeaderIds.has(header.id)} onChange={() => toggleHeaderSelection(header.id)} className="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
                       <input type="text" value={header.label} onChange={(e) => handleHeaderLabelChange(header.id, e.target.value)} className="w-full bg-transparent font-semibold text-center p-1 focus:ring-1 focus:ring-blue-400 rounded"/>
-                      <button onClick={() => handleDeleteColumn(header.id)} className="text-red-400 hover:text-red-700 font-bold px-1" title="Delete Column/Group">&times;</button>
+                      
+                      {/* MODIFIED: Container for action buttons */}
+                      <div className="flex items-center">
+                        {/* NEW: Lock/Unlock button for leaf columns (columns with data) */}
+                        {(!header.children || header.children.length === 0) && (
+                            <button
+                                onClick={() => handleToggleColumnEditable(header.id)}
+                                className={`p-1 rounded ${(header.isEditable ?? true) ? 'text-gray-400 hover:bg-gray-200' : 'text-blue-600 hover:bg-blue-100'}`}
+                                title={(header.isEditable ?? true) ? "Mark column as uneditable" : "Mark column as editable"}
+                            >
+                                {(header.isEditable ?? true) ? <LockOpenIcon /> : <LockClosedIcon />}
+                            </button>
+                        )}
+                        <button onClick={() => handleDeleteColumn(header.id)} className="text-red-400 hover:text-red-700 font-bold px-1" title="Delete Column/Group">&times;</button>
+                      </div>
                     </div>
                   </th>
                 ))}
@@ -241,12 +303,18 @@ export const TableQuestionEditor: React.FC<{
               <tr key={row.id} className="hover:bg-gray-50">
                 {orderedColumnKeys.map((key) => (
                   <td key={`${key}-${row.id}`} className="border-b border-r p-0">
-                    <input type="text" value={row.values[key] ?? ""} onChange={(e) => handleCellChange(row.id, key, e.target.value)} className="w-full p-2 border-0 focus:ring-1 focus:ring-blue-400"/>
+                    <input 
+                      type="text" 
+                      value={row.values[key] ?? ""} 
+                      onChange={(e) => handleCellChange(row.id, key, e.target.value)} 
+                      // MODIFIED: Disable input based on the column's editable state
+                      disabled={!columnEditableMap.get(key)}
+                      className="w-full p-2 border-0 focus:ring-1 focus:ring-blue-400 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+                    />
                   </td>
                 ))}
                 <td className="border-b border-r text-center p-0">
                    <button onClick={() => handleDeleteRow(row.id)} 
-                     // Disable based on the question prop
                      disabled={question.rowsLocked} 
                      className="text-red-500 px-2 py-2 hover:bg-red-100 rounded-full disabled:text-gray-300 disabled:hover:bg-transparent" title="Delete Row">&ndash;</button>
                 </td>
@@ -258,7 +326,6 @@ export const TableQuestionEditor: React.FC<{
       <div className="mt-2">
         <button 
           onClick={handleAddRow} 
-          // Disable based on the question prop
           disabled={question.rowsLocked} 
           className="text-sm bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded disabled:bg-gray-100 disabled:text-gray-400">
             + Add Row

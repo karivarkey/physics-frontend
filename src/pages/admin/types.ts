@@ -19,6 +19,7 @@ export type TableHeader = {
   colSpan: number;
   rowSpan?: number;
   children?: TableHeader[];
+  isEditable? :boolean;
 };
 
 export type TableQuestion = {

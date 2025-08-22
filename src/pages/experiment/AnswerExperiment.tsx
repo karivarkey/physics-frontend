@@ -164,6 +164,21 @@ const QuestionRenderer: React.FC<{
       const handleDeleteRow = (rowId: string) => {
         onAnswerChange(answerData.filter((row: TableRow) => row.id !== rowId));
       };
+       const columnEditableMap = useMemo(() => {
+        const map = new Map<string, boolean>();
+        const findEditableKeys = (headers: TableHeader[]) => {
+            headers.forEach(h => {
+                if (h.children && h.children.length > 0) {
+                    findEditableKeys(h.children);
+                } else if (h.key) {
+                    // A column is editable if `isEditable` is true or undefined.
+                    map.set(h.key, h.isEditable ?? true);
+                }
+            });
+        };
+        findEditableKeys(tableQuestion.headers);
+        return map;
+      }, [tableQuestion.headers]);
 
       return (
         <Card>
@@ -204,6 +219,7 @@ const QuestionRenderer: React.FC<{
                               handleCellChange(row.id, key, e.target.value)
                             }
                             className="w-full border-0 shadow-none focus-visible:ring-0 rounded-none"
+                            disabled={!columnEditableMap.get(key)}
                           />
                         </td>
                       ))}
@@ -357,7 +373,7 @@ const AnswerExperiment = () => {
       <main className="container mx-auto max-w-4xl py-8 space-y-8">
         {experiment.questions.questions.map(
           (q) =>
-            answers[q.id] && (
+            answers[q.id] !== undefined && (
               <QuestionRenderer
                 key={q.id}
                 question={q}
