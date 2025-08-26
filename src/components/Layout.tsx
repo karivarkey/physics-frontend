@@ -2,15 +2,14 @@
 
 import Header from "./home/header/Header";
 
-
 export default function Layout({ children }: { children: React.ReactNode }) {
-    const currentPath = window.location.pathname ;
-
-
+  const currentPath = window.location.pathname;
 
   return (
     <div>
-      {  !currentPath.endsWith("/login") && !currentPath.endsWith("/signup") && <Header />}
+      {!currentPath.endsWith("/login") &&
+        !currentPath.endsWith("/signup") &&
+        !currentPath.endsWith("/") && <Header />}
 
       <main>{children}</main>
     </div>
