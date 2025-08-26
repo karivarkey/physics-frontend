@@ -2,10 +2,11 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
+import AnimatedCursor from "react-animated-cursor";
 
 // --- NEW: Import TanStack Query ---
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import AnswerExperiment from "./pages/experiment/AnswerExperiment";
 // Components & Pages (your existing imports)
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -25,8 +26,8 @@ import Layout from "./components/Layout";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 
 // Styles & Utils
-import './index.css'
-import { Toaster } from 'react-hot-toast';
+import "./index.css";
+import { Toaster } from "react-hot-toast";
 
 // --- NEW: 1. Create a QueryClient instance ---
 // This should be created outside the component to prevent it from being recreated on every render.
@@ -41,16 +42,46 @@ const AppRoutes = () => {
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           {/* ... all your routes ... */}
-          <Route path="/" element={<PageTransition><Splash /></PageTransition>} />
-          <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
-          <Route path="/signup" element={<PageTransition><Signup /></PageTransition>} />
-          <Route path="/teacher/login" element={<PageTransition><TeacherLogin /></PageTransition>} />
+          <Route
+            path="/"
+            element={
+              <PageTransition>
+                <Splash />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <PageTransition>
+                <Login />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/signup"
+            element={
+              <PageTransition>
+                <Signup />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/teacher/login"
+            element={
+              <PageTransition>
+                <TeacherLogin />
+              </PageTransition>
+            }
+          />
 
           <Route
             path="/home"
             element={
               <ProtectedRoute>
-                <PageTransition><Home /></PageTransition>
+                <PageTransition>
+                  <Home />
+                </PageTransition>
               </ProtectedRoute>
             }
           />
@@ -58,16 +89,20 @@ const AppRoutes = () => {
             path="/onboarding"
             element={
               <ProtectedRoute>
-                <PageTransition><OnboardingPage /></PageTransition>
+                <PageTransition>
+                  <OnboardingPage />
+                </PageTransition>
               </ProtectedRoute>
             }
           />
-          
+
           <Route
             path="/experiment/:id"
             element={
               <ProtectedRoute>
-                <PageTransition><AnswerExperiment /></PageTransition>
+                <PageTransition>
+                  <AnswerExperiment />
+                </PageTransition>
               </ProtectedRoute>
             }
           />
@@ -76,7 +111,9 @@ const AppRoutes = () => {
             path="/teacher/home"
             element={
               <TeacherProtectedRoute>
-                <PageTransition><TeacherHome /></PageTransition>
+                <PageTransition>
+                  <TeacherHome />
+                </PageTransition>
               </TeacherProtectedRoute>
             }
           />
@@ -84,7 +121,9 @@ const AppRoutes = () => {
             path="/teacher/class/:classId"
             element={
               <TeacherProtectedRoute>
-                <PageTransition><ClassDetails /></PageTransition>
+                <PageTransition>
+                  <ClassDetails />
+                </PageTransition>
               </TeacherProtectedRoute>
             }
           />
@@ -92,7 +131,9 @@ const AppRoutes = () => {
             path="/teacher/admin/home"
             element={
               <AdminProtectedRoute>
-                <PageTransition><AdminHome /></PageTransition>
+                <PageTransition>
+                  <AdminHome />
+                </PageTransition>
               </AdminProtectedRoute>
             }
           />
@@ -100,7 +141,9 @@ const AppRoutes = () => {
             path="/admin/experiment/:id"
             element={
               <AdminProtectedRoute>
-                <PageTransition><EditExperiment /></PageTransition>
+                <PageTransition>
+                  <EditExperiment />
+                </PageTransition>
               </AdminProtectedRoute>
             }
           />
@@ -109,7 +152,6 @@ const AppRoutes = () => {
     </Layout>
   );
 };
-
 
 const rootElement = document.getElementById("root");
 if (rootElement) {
@@ -120,17 +162,44 @@ if (rootElement) {
         <BrowserRouter>
           <Toaster
             position="bottom-left"
-            toastOptions={{ /* ... your toast options ... */ }}
+            toastOptions={
+              {
+                /* ... your toast options ... */
+              }
+            }
           />
-          
+
           <AppRoutes />
 
           {/* --- NEW (Optional but Recommended): Add the Devtools --- */}
           <ReactQueryDevtools initialIsOpen={false} />
         </BrowserRouter>
       </QueryClientProvider>
+      <AnimatedCursor
+        innerSize={12}
+        outerSize={35}
+        color="0, 0, 0" // neon pink/red-ish accent
+        outerAlpha={0.25}
+        innerScale={0.7}
+        outerScale={2}
+        showSystemCursor={false}
+        clickables={[
+          "a",
+          "button",
+          ".link",
+          "input[type='text']",
+          "input[type='email']",
+          "input[type='number']",
+          "input[type='submit']",
+          "input[type='image']",
+          "label[for]",
+          "select",
+          "textarea",
+          ".cursor-hover", // you can add this class to anything you want cursor to react to
+        ]}
+      />
     </React.StrictMode>
   );
 } else {
-  throw new Error('Root element not found');
+  throw new Error("Root element not found");
 }
