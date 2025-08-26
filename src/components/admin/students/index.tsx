@@ -1,6 +1,3 @@
-"use client";
-
-import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/lib/axios";
 
@@ -26,11 +23,14 @@ const AdminStudents = () => {
   });
 
   if (isLoading) return <div className="p-6">Loading students...</div>;
-  if (isError) return <div className="p-6 text-red-500">Failed to load students</div>;
+  if (isError)
+    return <div className="p-6 text-red-500">Failed to load students</div>;
 
   // Sort first by class, then by name
   const sortedStudents = [...(data ?? [])].sort((a, b) => {
-    const classCompare = a.student_info.class.localeCompare(b.student_info.class);
+    const classCompare = a.student_info.class.localeCompare(
+      b.student_info.class
+    );
     if (classCompare !== 0) return classCompare;
     return a.student_info.name.localeCompare(b.student_info.name);
   });

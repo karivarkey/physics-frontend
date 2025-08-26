@@ -1,5 +1,3 @@
-"use client";
-
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "@/lib/axios";
@@ -8,7 +6,6 @@ import { format, formatDistanceToNow, isPast } from "date-fns";
 // Import shadcn/ui components
 import {
   Card,
-  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
@@ -35,7 +32,10 @@ const fetchExperiments = async (): Promise<Experiment[]> => {
 };
 
 // --- Helper Component for Experiment Status ---
-const ExperimentStatus = ({ deadline, date_submitted }: Partial<Experiment>) => {
+const ExperimentStatus = ({
+  deadline,
+  date_submitted,
+}: Partial<Experiment>) => {
   if (date_submitted) {
     return (
       <Badge variant="default" className="bg-green-600 hover:bg-green-700">
@@ -56,7 +56,6 @@ const ExperimentStatus = ({ deadline, date_submitted }: Partial<Experiment>) => 
   }
   return <Badge variant="outline">Open</Badge>;
 };
-
 
 // --- Main Home Component ---
 const Home = () => {
