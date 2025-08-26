@@ -1,6 +1,6 @@
 // components/Logo.tsx
 import { easeInOut, motion } from "framer-motion";
-import { Atom } from "lucide-react";
+import { TestTube2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Logo = () => {
@@ -20,7 +20,7 @@ const Logo = () => {
   // Child fade+slide animation
   const item = {
     hidden: { opacity: 0, y: 10 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.4, easeInOut} },
+    show: { opacity: 1, y: 0, transition: { duration: 0.4, easeInOut } },
   };
 
   return (
@@ -33,7 +33,7 @@ const Logo = () => {
     >
       {/* Icon */}
       <motion.div variants={item}>
-        <Atom className="h-7 w-7 text-blue-500" />
+        <TestTube2 className="h-7 w-7 " />
       </motion.div>
 
       {/* Text block */}
@@ -45,7 +45,7 @@ const Logo = () => {
       >
         <motion.span
           variants={item}
-          className="text-xl font-bold tracking-tighter bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent"
+          className="text-xl font-bold tracking-tighter text-black bg-clip-text"
         >
           RSET LABS
         </motion.span>
