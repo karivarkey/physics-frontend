@@ -1,22 +1,23 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { auth } from '@/lib/firebase';
-import { 
-  signInWithEmailAndPassword, 
-  GoogleAuthProvider, 
-  signInWithPopup 
-} from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
-import axiosInstance from '@/lib/axios';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { auth } from "@/lib/firebase";
+import {
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+  sendPasswordResetEmail,
+} from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import axiosInstance from "@/lib/axios";
 
 const Login = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -24,36 +25,35 @@ const Login = () => {
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      
-      if(auth.currentUser?.email && !auth.currentUser.email.endsWith('@rajagiri.edu.in') ) {
+
+      if (
+        auth.currentUser?.email &&
+        !auth.currentUser.email.endsWith("@rajagiri.edu.in")
+      ) {
         await auth.signOut();
-        toast.error('Please use your Rajagiri email address');
+        toast.error("Please use your Rajagiri email address");
         return;
       }
 
-      if (!auth.currentUser?.emailVerified){
+      if (!auth.currentUser?.emailVerified) {
         await auth.signOut();
-        toast.error('Please verify your email address');
+        toast.error("Please verify your email address");
         return;
       }
 
-      const onboard = (await axiosInstance.get(`/user/check/onboard`)).data.isOnboarded;
+      const onboard = (await axiosInstance.get(`/user/check/onboard`)).data
+        .isOnboarded;
 
-      toast.success('Logged in successfully!');
+      toast.success("Logged in successfully!");
       if (onboard) {
         // User is onboarded, navigate to dashboard
-        
-        navigate('/home');
-      }else{
-        navigate('/onboarding');
+
+        navigate("/home");
+      } else {
+        navigate("/onboarding");
       }
-    
-
-      
-
-      
     } catch (err: any) {
-      toast.error(err.message || 'Something went wrong.');
+      toast.error(err.message || "Something went wrong.");
     } finally {
       setLoading(false);
     }
@@ -66,17 +66,17 @@ const Login = () => {
       const result = await signInWithPopup(auth, provider);
       const userEmail = result.user.email;
 
-      if (!userEmail?.endsWith('@rajagiri.edu.in')) {
+      if (!userEmail?.endsWith("@rajagiri.edu.in")) {
         // Sign out immediately if domain is wrong
         await auth.signOut();
-        toast.error('Please sign in using @rajagiri.edu.in email.');
+        toast.error("Please sign in using @rajagiri.edu.in email.");
         return;
       }
 
-      toast.success('Logged in with Google!');
-      navigate('/home');
+      toast.success("Logged in with Google!");
+      navigate("/home");
     } catch (err: any) {
-      toast.error(err.message || 'Google sign-in failed.');
+      toast.error(err.message || "Google sign-in failed.");
     } finally {
       setLoading(false);
     }
@@ -118,9 +118,27 @@ const Login = () => {
                 className="w-full bg-black text-white hover:bg-gray-900"
                 disabled={loading}
               >
-                {loading ? 'Signing in...' : 'Sign in'}
+                {loading ? "Signing in..." : "Sign in"}
               </Button>
             </form>
+            <div className="w-full flex items-end justify-end font-display underline text-sm pt-2 ">
+              <button
+                className="cursor-pointer"
+                onClick={() => {
+                  if (email.length == 0) {
+                    toast.error("please input an email");
+                    return;
+                  }
+                  toast.promise(sendPasswordResetEmail(auth, email), {
+                    loading: "Sending...",
+                    success: "Check your email for the reset link!",
+                    error: (err) => err.message || "Something went wrong.",
+                  });
+                }}
+              >
+                Forgot password?
+              </button>
+            </div>
 
             <div className="my-4 flex items-center justify-center">
               <span className="text-gray-400">or</span>
@@ -136,14 +154,20 @@ const Login = () => {
             </Button>
 
             <p className="mt-4 text-center text-sm text-gray-500">
-              Don’t have an account?{' '}
-              <button onClick={() => navigate('/signup')} className="text-black underline">
+              Don’t have an account?{" "}
+              <button
+                onClick={() => navigate("/signup")}
+                className="text-black underline"
+              >
                 Sign up
               </button>
             </p>
             <p className="mt-4 text-center text-sm text-gray-500">
-              Not a student?{' '}
-              <button onClick={() => navigate('/teacher/login')} className="text-black underline">
+              Not a student?{" "}
+              <button
+                onClick={() => navigate("/teacher/login")}
+                className="text-black underline"
+              >
                 Login as Teacher
               </button>
             </p>
