@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "@/lib/axios";
-import { X, Trash2 } from "lucide-react"; // Import Trash2 icon
-import axios from "axios"; // Import axios for type checking
+import { X, Trash2 } from "lucide-react";
+import axios from "axios";
 import {
   Card,
   CardContent,
@@ -96,21 +96,23 @@ const GroupsList = ({ class_short }: Props) => {
           .get(`/teacher/students/${class_short}/groups`)
           .then((res) => res.data),
       enabled: !!activeGroupId,
-      // *** MODIFICATION HERE ***
-      // Prevent retrying on 404 errors, as it's an expected state (no students found)
       retry: (failureCount, error) => {
         if (axios.isAxiosError(error) && error.response?.status === 404) {
-          return false; // Don't retry if the error is 404
+          return false;
         }
-        // For other errors, retry up to 2 times (default behavior)
         return failureCount < 2;
       },
     });
 
+  // *** FIX APPLIED HERE ***
+  // All hooks, including useMemo, must be called at the top level before any conditional returns.
+  const groups = groupsData?.[0]?.groups || [];
+  const sortedGroups = useMemo(() => {
+    return [...groups].sort((a, b) => a.group_name - b.group_name);
+  }, [groups]);
+
   // Memoized filtered students list
   const filteredUngroupedStudents = useMemo(() => {
-    // If the query resulted in a 404, ungroupedStudentsData will be undefined.
-    // So we return an empty array, which is the desired behavior.
     if (!ungroupedStudentsData) return [];
     return ungroupedStudentsData.filter(
       (student) =>
@@ -190,6 +192,7 @@ const GroupsList = ({ class_short }: Props) => {
     },
   });
 
+  // Handler functions remain the same
   const handleCreateGroup = () => {
     const groupNumber = parseInt(newGroupName, 10);
     if (!isNaN(groupNumber)) {
@@ -218,6 +221,7 @@ const GroupsList = ({ class_short }: Props) => {
     deleteGroupMutation.mutate(groupId);
   };
 
+  // Conditional returns are now safe to use because all hooks have been called.
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -226,15 +230,9 @@ const GroupsList = ({ class_short }: Props) => {
     return <div>Error fetching groups</div>;
   }
 
-  const groups = groupsData?.[0]?.groups || [];
-  const sortedGroups = useMemo(() => {
-    // Create a shallow copy using [...] before sorting to avoid mutating the original array from the query cache.
-    return [...groups].sort((a, b) => a.group_name - b.group_name);
-  }, [groups]);
-
+  // The rest of your component's JSX remains the same
   return (
     <div className="p-4">
-      {/* ... JSX is unchanged from the previous version ... */}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Manage Groups</h1>
         <Dialog
@@ -245,7 +243,6 @@ const GroupsList = ({ class_short }: Props) => {
             <Button>Create Group</Button>
           </DialogTrigger>
           <DialogContent>
-            {/* ... Create Group Modal Content ... */}
             <DialogHeader>
               <DialogTitle>Create a New Group</DialogTitle>
               <DialogDescription>
@@ -287,8 +284,6 @@ const GroupsList = ({ class_short }: Props) => {
                     {group.students.length} members
                   </CardDescription>
                 </div>
-
-                {/* *** DELETE GROUP BUTTON & DIALOG *** */}
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button
