@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ExperimentsList from "@/components/teachers/classes/experimentsList";
 import StudentsList from "@/components/teachers/classes/studentsList";
+import GroupsList from "@/components/teachers/GroupsList";
 import { motion, AnimatePresence, easeOut } from "framer-motion";
 
 const tabVariants = {
@@ -35,7 +36,6 @@ const ClassDetails = () => {
             className="px-6 py-2 rounded-full transition-all data-[state=active]:bg-gray-900 data-[state=active]:shadow-md data-[state=active]:text-white text-gray-300"
           >
             Students wise
-          
           </TabsTrigger>
           <TabsTrigger
             value="experiments"
@@ -63,6 +63,21 @@ const ClassDetails = () => {
                 className="mt-4"
               >
                 <StudentsList class_short_name={params.classId ?? ""} />
+              </motion.div>
+            </TabsContent>
+          )}
+
+          {activeTab === "groups" && (
+            <TabsContent value="groups">
+              <motion.div
+                key="groups"
+                variants={tabVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="mt-4"
+              >
+                <GroupsList />
               </motion.div>
             </TabsContent>
           )}
