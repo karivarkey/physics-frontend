@@ -77,7 +77,7 @@ const ClassDetails = () => {
                 exit="exit"
                 className="mt-4"
               >
-                <GroupsList />
+                <GroupsList class_short={params.classId ?? ""} />
               </motion.div>
             </TabsContent>
           )}
