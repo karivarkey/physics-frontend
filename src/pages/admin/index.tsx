@@ -5,9 +5,8 @@ import { cn } from "@/lib/utils";
 
 import AdminStudents from "@/components/admin/students";
 import AdminQuestions from "@/components/admin/experiments";
+import TeachersTab from "@/components/admin/teachers";
 // Demo tab components (replace with real ones)
-
-const TeachersTab = () => <div>👨‍🏫 Teachers Management (Demo Content)</div>;
 
 const MarksTab = () => <div>📝 Marks Overview (Demo Content)</div>;
 
