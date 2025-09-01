@@ -158,6 +158,17 @@ const GroupsList = ({ class_short }: Props) => {
     },
   });
 
+  const deleteGroupMutation = useMutation({
+    mutationFn: (groupId: string) =>
+      axiosInstance.delete(`/teacher/groups/${groupId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["groups", class_short] });
+      toast.success("Group deleted successfully.");
+    },
+    onError: () => {
+      toast.error("Failed to delete group.");
+    },
+  });
   // Mutation for removing a student from a group
   const removeStudentMutation = useMutation({
     mutationFn: (variables: { groupId: string; studentId: string }) =>
@@ -206,18 +217,6 @@ const GroupsList = ({ class_short }: Props) => {
   const handleDeleteGroup = (groupId: string) => {
     deleteGroupMutation.mutate(groupId);
   };
-
-  const deleteGroupMutation = useMutation({
-    mutationFn: (groupId: string) =>
-      axiosInstance.delete(`/teacher/groups/${groupId}`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["groups", class_short] });
-      toast.success("Group deleted successfully.");
-    },
-    onError: () => {
-      toast.error("Failed to delete group.");
-    },
-  });
 
   if (isLoading) {
     return <div>Loading...</div>;
