@@ -4,7 +4,7 @@ import { auth } from '@/lib/firebase';
 import toast from 'react-hot-toast';
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.API_URL || 'https://rsetlabs-backend.onrender.com',
+  baseURL: import.meta.env.VITE_BACKEND_URL || 'https://rsetlabs-backend.onrender.com',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
