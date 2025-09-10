@@ -121,7 +121,7 @@ const Home = () => {
             <CardHeader>
               <CardTitle>{experiment.title}</CardTitle>
               {experiment.description && (
-                <CardDescription>{experiment.description}</CardDescription>
+                <CardDescription>{experiment.description.slice(0, 100)}...</CardDescription>
               )}
             </CardHeader>
             <CardFooter>
