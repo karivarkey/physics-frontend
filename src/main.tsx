@@ -15,6 +15,7 @@ import PageTransition from "./components/PageTransition";
 import Home from "./pages/home";
 import Login from "./pages/login";
 import Signup from "./pages/signup";
+import SettingsPage from "./pages/settings";
 import Splash from "./pages/splash";
 import OnboardingPage from "./pages/onboarding";
 import TeacherLogin from "./pages/teacher/login";
@@ -95,6 +96,18 @@ const AppRoutes = () => {
               </ProtectedRoute>
             }
           />
+
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <PageTransition>
+                  <SettingsPage />
+                </PageTransition>
+              </ProtectedRoute>
+            }
+          />
+          
 
           <Route
             path="/experiment/:id"
