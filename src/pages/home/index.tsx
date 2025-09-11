@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "@/lib/axios";
 import { format, formatDistanceToNow, isPast } from "date-fns";
+import ReactMarkdown from "react-markdown";
 
 // Import shadcn/ui components
 import {
@@ -121,7 +122,17 @@ const Home = () => {
             <CardHeader>
               <CardTitle>{experiment.title}</CardTitle>
               {experiment.description && (
-                <CardDescription>{experiment.description.slice(0, 100)}...</CardDescription>
+                <CardDescription className="text-sm text-muted-foreground max-h-24 overflow-hidden [&_*]:m-0 [&_*]:text-current">
+                  <ReactMarkdown
+                    components={{
+                      a: ({ node, ...props }) => (
+                        <a {...props} target="_blank" rel="noopener noreferrer" />
+                      ),
+                    }}
+                  >
+                    {experiment.description}
+                  </ReactMarkdown>
+                </CardDescription>
               )}
             </CardHeader>
             <CardFooter>
