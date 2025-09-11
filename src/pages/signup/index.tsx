@@ -33,10 +33,20 @@ const Signup = () => {
         return;
       }
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await axiosInstance.post('/user/create')
-      await sendEmailVerification(userCredential.user);
-      await signOut(auth);
-      toast.success('Account created! Please check your email to verify the account');
+      axiosInstance.post('/user/create').then(
+        async  ()=> {
+          toast.success('Account created! Please check your email to verify the account');
+          await sendEmailVerification(userCredential.user);
+          signOut(auth).then(() => {
+            // Sign-out successful.
+          });
+
+        }
+      ).catch(async (error) => {
+        await userCredential.user.delete();
+        toast.error('Error creating user profile. Please try again.');
+        console.log(error)
+      });
       navigate('/login');
     } catch (err: any) {
       toast.error(err.message || 'Signup failed.');
