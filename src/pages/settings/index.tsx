@@ -1,5 +1,8 @@
 import { useState } from "react"
 import {  updatePassword } from "firebase/auth"
+import axiosInstance from "@/lib/axios"
+
+import toast from "react-hot-toast"
 
 
 import { Button } from "@/components/ui/button"
@@ -14,6 +17,14 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { auth } from "@/lib/firebase"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { allowedCombinations, type Division } from "@/pages/onboarding/classData"
 
 
 const SettingsPage = () => {
@@ -26,6 +37,11 @@ const SettingsPage = () => {
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
   const [loading, setLoading] = useState(false)
+  // --- Class switch state ---
+  const [branch, setBranch] = useState<string>("")
+  const [division, setDivision] = useState<string>("")
+  const [availableDivisions, setAvailableDivisions] = useState<Division[]>([])
+  const [switching, setSwitching] = useState(false)
 
   // Handle photo change
 
@@ -44,6 +60,30 @@ const SettingsPage = () => {
       alert("Error updating password. You may need to re-authenticate.")
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleBranchChange = (code: string) => {
+    setBranch(code)
+    setDivision("")
+    const selected = allowedCombinations.find(b => b.code === code)
+    setAvailableDivisions(selected?.divisions ?? [])
+  }
+
+  const handleSwitchClass = async () => {
+    if (!branch) {
+      toast.error("Select a branch")
+      return
+    }
+    const class_code = division ? `${branch}${division}` : branch
+    try {
+      setSwitching(true)
+      await axiosInstance.post("/user/change-class", { class_code })
+      toast.success("Class updated")
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to update class")
+    } finally {
+      setSwitching(false)
     }
   }
 
@@ -88,6 +128,54 @@ const SettingsPage = () => {
         <CardFooter className="border-t px-6 py-4">
           <Button onClick={handlePasswordUpdate} disabled={loading}>
             {loading ? "Updating..." : "Update Password"}
+          </Button>
+        </CardFooter>
+      </Card>
+
+      {/* Class Switcher (same logic as onboarding) */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Class</CardTitle>
+          <CardDescription>Switch your branch/division.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label className="block mb-1">Branch</Label>
+            <Select onValueChange={handleBranchChange}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select Branch" />
+              </SelectTrigger>
+              <SelectContent>
+                {allowedCombinations.map((b) => (
+                  <SelectItem key={b.code} value={b.code}>
+                    {b.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="block mb-1">Division</Label>
+            <Select
+              onValueChange={(v) => setDivision(v)}
+              disabled={!branch || availableDivisions.length === 0}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select Division" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableDivisions.map((d) => (
+                  <SelectItem key={d.code} value={d.code}>
+                    {d.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+        <CardFooter className="border-t px-6 py-4">
+          <Button onClick={handleSwitchClass} disabled={switching}>
+            {switching ? "Updating..." : "Switch Class"}
           </Button>
         </CardFooter>
       </Card>
