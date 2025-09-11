@@ -49,11 +49,10 @@ export const QuestionEditor: React.FC<{
       if (!(question as any).validate) return;
       setLimitsLoading(true);
       try {
-        const { data } = await axiosInstance.get(`/admin/question-validation/${question.id}`);
-        if (data) {
-          setLowerLimit(data.lower != null ? String(data.lower) : "");
-          setUpperLimit(data.upper != null ? String(data.upper) : "");
-        }
+        const { data } = await axiosInstance.get(`/admin/experiments/limits/${experimentId}/${question.id}`);
+        const first = Array.isArray(data?.limits) && data.limits.length > 0 ? data.limits[0] : null;
+        setLowerLimit(first?.min_value ?? "");
+        setUpperLimit(first?.max_value ?? "");
       } catch (_) {
       } finally {
         setLimitsLoading(false);
