@@ -25,6 +25,7 @@ import AdminHome from "./pages/admin";
 import EditExperiment from "./pages/admin/experiment";
 import Layout from "./components/Layout";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
+import SupportPage from "./pages/support";
 
 // Styles & Utils
 import "./index.css";
@@ -82,6 +83,16 @@ const AppRoutes = () => {
               <ProtectedRoute>
                 <PageTransition>
                   <Home />
+                </PageTransition>
+              </ProtectedRoute>
+            }
+          />
+         <Route
+            path="/support"
+            element={
+              <ProtectedRoute>
+                <PageTransition>
+                  <SupportPage />
                 </PageTransition>
               </ProtectedRoute>
             }
