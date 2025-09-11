@@ -29,6 +29,7 @@ import SupportPage from "./pages/support";
 
 // Styles & Utils
 import "./index.css";
+import "katex/dist/katex.min.css";
 import { Toaster } from "react-hot-toast";
 
 // --- NEW: 1. Create a QueryClient instance ---

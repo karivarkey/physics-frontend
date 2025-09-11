@@ -9,6 +9,8 @@ import { v4 as uuidv4 } from "uuid";
 import { format } from "date-fns";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
 
 import { StepBack } from "lucide-react";
 // Import types
@@ -81,7 +83,19 @@ const QuestionRenderer: React.FC<{
       return (
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">{question.prompt}</CardTitle>
+            <CardTitle className="text-lg">
+              <ReactMarkdown
+                components={{
+                  a: ({ node, ...props }) => (
+                    <a {...props} target="_blank" rel="noopener noreferrer" />
+                  ),
+                }}
+                remarkPlugins={[remarkMath]}
+                rehypePlugins={[rehypeKatex]}
+              >
+                {question.prompt}
+              </ReactMarkdown>
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
@@ -93,7 +107,7 @@ const QuestionRenderer: React.FC<{
               />
               {question.unit && (
                 <span className="text-muted-foreground whitespace-nowrap">
-                  <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+                  <ReactMarkdown rehypePlugins={[rehypeRaw, rehypeKatex]} remarkPlugins={[remarkMath]}>
                     {question.unit}
                   </ReactMarkdown>
                 </span>
@@ -183,7 +197,19 @@ const QuestionRenderer: React.FC<{
       return (
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">{tableQuestion.prompt}</CardTitle>
+            <CardTitle className="text-lg">
+              <ReactMarkdown
+                components={{
+                  a: ({ node, ...props }) => (
+                    <a {...props} target="_blank" rel="noopener noreferrer" />
+                  ),
+                }}
+                remarkPlugins={[remarkMath]}
+                rehypePlugins={[rehypeKatex]}
+              >
+                {tableQuestion.prompt}
+              </ReactMarkdown>
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto rounded-md border">
@@ -198,7 +224,17 @@ const QuestionRenderer: React.FC<{
                           rowSpan={header.rowSpan}
                           className="border-b border-r p-2 text-left font-semibold"
                         >
-                          {header.label}
+                          <ReactMarkdown
+                            components={{
+                              a: ({ node, ...props }) => (
+                                <a {...props} target="_blank" rel="noopener noreferrer" />
+                              ),
+                            }}
+                            remarkPlugins={[remarkMath]}
+                            rehypePlugins={[rehypeKatex]}
+                          >
+                            {header.label}
+                          </ReactMarkdown>
                         </th>
                       ))}
                     </tr>
@@ -212,15 +248,36 @@ const QuestionRenderer: React.FC<{
                           key={`${key}-${row.id}`}
                           className="border-b border-r p-0"
                         >
-                          <Input
-                            type="text"
-                            value={row.values[key] ?? ""}
-                            onChange={(e) =>
-                              handleCellChange(row.id, key, e.target.value)
-                            }
-                            className="w-full border-0 shadow-none focus-visible:ring-0 rounded-none"
-                            disabled={!columnEditableMap.get(key)}
-                          />
+                          {columnEditableMap.get(key) ? (
+                            <Input
+                              type="text"
+                              value={row.values[key] ?? ""}
+                              onChange={(e) =>
+                                handleCellChange(row.id, key, e.target.value)
+                              }
+                              className="w-full border-0 shadow-none focus-visible:ring-0 rounded-none"
+                            />
+                          ) : (
+                            <div className="p-2 min-h-[2.25rem]">
+                              {row.values[key] ? (
+                                <ReactMarkdown
+                                  components={{
+                                    a: ({ node, ...props }) => (
+                                      <a
+                                        {...props}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                      />
+                                    ),
+                                  }}
+                                  remarkPlugins={[remarkMath]}
+                                  rehypePlugins={[rehypeKatex]}
+                                >
+                                  {row.values[key]}
+                                </ReactMarkdown>
+                              ) : null}
+                            </div>
+                          )}
                         </td>
                       ))}
                       {!tableQuestion.rowsLocked && (
@@ -351,10 +408,20 @@ const AnswerExperiment = () => {
             </button>
             <div>
               <h1 className="text-2xl font-bold">{experiment.title}</h1>
-              <p className="text-sm text-muted-foreground mt-1">
-                {experiment.description} | Created on:{" "}
-                {format(new Date(experiment.created_at), "dd MMM yyyy")}
-              </p>
+              <div className="text-sm text-muted-foreground mt-1">
+                <ReactMarkdown
+                  components={{
+                    a: ({ node, ...props }) => (
+                      <a {...props} target="_blank" rel="noopener noreferrer" />
+                    ),
+                  }}
+                >
+                  {experiment.description}
+                </ReactMarkdown>
+                <span className="block mt-1">
+                  Created on: {format(new Date(experiment.created_at), "dd MMM yyyy")}
+                </span>
+              </div>
             </div>
           </div>
           <Button

@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "@/lib/axios";
 import { format, formatDistanceToNow, isPast } from "date-fns";
 import ReactMarkdown from "react-markdown";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
 
 // Import shadcn/ui components
 import {
@@ -129,6 +131,8 @@ const Home = () => {
                         <a {...props} target="_blank" rel="noopener noreferrer" />
                       ),
                     }}
+                    remarkPlugins={[remarkMath]}
+                    rehypePlugins={[rehypeKatex]}
                   >
                     {experiment.description}
                   </ReactMarkdown>
