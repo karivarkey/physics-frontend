@@ -27,6 +27,17 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
+import TeleprompterText from "@/components/TeleprompterText";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 // --- Type Definitions for this specific view ---
 type ExperimentData = {
@@ -212,94 +223,99 @@ const QuestionRenderer: React.FC<{
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto rounded-md border">
-              <table className="w-full text-sm">
-                <thead className="bg-muted/50">
-                  {headerRows.map((row, rowIndex) => (
-                    <tr key={rowIndex}>
-                      {row.map((header) => (
-                        <th
-                          key={header.id}
-                          colSpan={header.colSpan}
-                          rowSpan={header.rowSpan}
-                          className="border-b border-r p-2 text-left font-semibold"
-                        >
-                          <ReactMarkdown
-                            components={{
-                              a: ({ node, ...props }) => (
-                                <a {...props} target="_blank" rel="noopener noreferrer" />
-                              ),
-                            }}
-                            remarkPlugins={[remarkMath]}
-                            rehypePlugins={[rehypeKatex]}
+            <div className="relative -mx-4 sm:mx-0">
+              <div className="overflow-x-auto rounded-md border">
+                <table className="min-w-[640px] sm:min-w-full text-[13px] md:text-sm">
+                  <thead className="bg-muted/50">
+                    {headerRows.map((row, rowIndex) => (
+                      <tr key={rowIndex}>
+                        {row.map((header, headerIndex) => (
+                          <th
+                            key={header.id}
+                            colSpan={header.colSpan}
+                            rowSpan={header.rowSpan}
+                            className={`border-b border-r p-2 md:p-3 text-left font-semibold align-top whitespace-pre-wrap break-words [&_*]:m-0 ${headerIndex === 0 ? 'sticky left-0 z-10 bg-background' : ''}`}
                           >
-                            {header.label}
-                          </ReactMarkdown>
-                        </th>
-                      ))}
-                    </tr>
-                  ))}
-                </thead>
-                <tbody>
-                  {(answerData as TableRow[]).map((row) => (
-                    <tr key={row.id} className="hover:bg-muted/50">
-                      {orderedColumnKeys.map((key) => (
-                        <td
-                          key={`${key}-${row.id}`}
-                          className="border-b border-r p-0"
-                        >
-                          {columnEditableMap.get(key) ? (
-                            <Input
-                              type="text"
-                              value={row.values[key] ?? ""}
-                              onChange={(e) =>
-                                handleCellChange(row.id, key, e.target.value)
-                              }
-                              className="w-full border-0 shadow-none focus-visible:ring-0 rounded-none"
-                            />
-                          ) : (
-                            <div className="p-2 min-h-[2.25rem]">
-                              {row.values[key] ? (
-                                <ReactMarkdown
-                                  components={{
-                                    a: ({ node, ...props }) => (
-                                      <a
-                                        {...props}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                      />
-                                    ),
-                                  }}
-                                  remarkPlugins={[remarkMath]}
-                                  rehypePlugins={[rehypeKatex]}
-                                >
-                                  {row.values[key]}
-                                </ReactMarkdown>
-                              ) : null}
-                            </div>
-                          )}
-                        </td>
-                      ))}
-                      {!tableQuestion.rowsLocked && (
-                        <td className="border-b border-r text-center p-0 w-12">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleDeleteRow(row.id)}
-                            className="text-muted-foreground hover:text-destructive"
-                            title="Delete Row"
+                            <ReactMarkdown
+                              components={{
+                                a: ({ node, ...props }) => (
+                                  <a {...props} target="_blank" rel="noopener noreferrer" />
+                                ),
+                              }}
+                              remarkPlugins={[remarkMath]}
+                              rehypePlugins={[rehypeKatex]}
+                            >
+                              {header.label}
+                            </ReactMarkdown>
+                          </th>
+                        ))}
+                      </tr>
+                    ))}
+                  </thead>
+                  <tbody>
+                    {(answerData as TableRow[]).map((row) => (
+                      <tr key={row.id} className="hover:bg-muted/50">
+                        {orderedColumnKeys.map((key, cellIndex) => (
+                          <td
+                            key={`${key}-${row.id}`}
+                            className={`border-b border-r p-0 align-top ${cellIndex === 0 ? 'sticky left-0 z-10 bg-background' : ''}`}
                           >
-                            &ndash;
-                          </Button>
-                        </td>
-                      )}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                            {columnEditableMap.get(key) ? (
+                              <Input
+                                type="text"
+                                value={row.values[key] ?? ""}
+                                onChange={(e) =>
+                                  handleCellChange(row.id, key, e.target.value)
+                                }
+                                className="w-full border-0 shadow-none focus-visible:ring-0 rounded-none text-[13px] md:text-sm px-2 py-2"
+                              />
+                            ) : (
+                              <div className="p-2 md:p-3 min-h-[2.5rem] whitespace-pre-wrap break-words [&_*]:m-0">
+                                {row.values[key] ? (
+                                  <ReactMarkdown
+                                    components={{
+                                      a: ({ node, ...props }) => (
+                                        <a
+                                          {...props}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                        />
+                                      ),
+                                    }}
+                                    remarkPlugins={[remarkMath]}
+                                    rehypePlugins={[rehypeKatex]}
+                                  >
+                                    {row.values[key]}
+                                  </ReactMarkdown>
+                                ) : null}
+                              </div>
+                            )}
+                          </td>
+                        ))}
+                        {!tableQuestion.rowsLocked && (
+                          <td className="border-b border-r text-center p-0 w-10 md:w-12">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleDeleteRow(row.id)}
+                              className="text-muted-foreground hover:text-destructive"
+                              title="Delete Row"
+                            >
+                              &ndash;
+                            </Button>
+                          </td>
+                        )}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {/* Subtle scroll hint gradients for mobile */}
+              <div className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-gradient-to-r from-background to-transparent sm:hidden" />
+              <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-background to-transparent sm:hidden" />
             </div>
             {!tableQuestion.rowsLocked && (
-              <div className="mt-4">
+              <div className="mt-3 md:mt-4">
                 <Button variant="secondary" onClick={handleAddRow}>
                   + Add Row
                 </Button>
@@ -319,6 +335,7 @@ const AnswerExperiment = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [isConfirmOpen, setIsConfirmOpen] = useState<boolean>(false);
 
   const {
     data: experiment,
@@ -368,11 +385,26 @@ const AnswerExperiment = () => {
     submissionMutation.mutate({ experimentId: id, answers });
   };
 
+  const totalQuestions = experiment?.questions.questions.length ?? 0;
+  const answeredCount = React.useMemo(() => {
+    if (!experiment) return 0;
+    let count = 0;
+    for (const q of experiment.questions.questions) {
+      const val = answers[q.id];
+      if (q.type === "text") {
+        if (typeof val === "string" && val.trim().length > 0) count += 1;
+      } else if (q.type === "table") {
+        if (Array.isArray(val) && val.length > 0) count += 1;
+      }
+    }
+    return count;
+  }, [answers, experiment]);
+
   if (isLoading) {
     // A simple loading state for the redesigned layout
     return (
       <div className="bg-muted/20 min-h-screen">
-        <header className="sticky top-0 bg-background/80 backdrop-blur-sm border-b z-10">
+        <header className="bg-background border-b">
           <div className="container mx-auto flex items-center justify-between p-4 h-20">
             <div className="space-y-2">
               <Skeleton className="h-7 w-64" />
@@ -394,10 +426,10 @@ const AnswerExperiment = () => {
 
   return (
     <div className="bg-muted/20 min-h-screen">
-      {/* --- Vercel-style Sticky Header --- */}
-      <header className="sticky top-0 bg-background/80 backdrop-blur-sm border-b z-10">
-        <div className="container mx-auto flex items-center justify-between p-4">
-          <div className="flex items-center justify-start gap-3">
+      {/* Header scrolls away on scroll */}
+      <header className="bg-background border-b">
+        <div className="container mx-auto p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-start sm:items-center justify-start gap-3">
             <button
               onClick={() => {
                 navigate(-1);
@@ -406,33 +438,42 @@ const AnswerExperiment = () => {
             >
               <StepBack className="w-10 mr-2" />
             </button>
-            <div>
-              <h1 className="text-2xl font-bold">{experiment.title}</h1>
-              <div className="text-sm text-muted-foreground mt-1">
-                <ReactMarkdown
-                  components={{
-                    a: ({ node, ...props }) => (
-                      <a {...props} target="_blank" rel="noopener noreferrer" />
-                    ),
-                  }}
-                >
-                  {experiment.description}
-                </ReactMarkdown>
-                <span className="block mt-1">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-2xl font-bold leading-tight">{experiment.title}</h1>
+              <div className="mt-2">
+                <TeleprompterText heightRem={6} durationSec={20}>
+                  <div className="text-sm text-muted-foreground [&_p]:m-0">
+                    <ReactMarkdown
+                      components={{
+                        a: ({ node, ...props }) => (
+                          <a {...props} target="_blank" rel="noopener noreferrer" />
+                        ),
+                      }}
+                    >
+                      {experiment.description}
+                    </ReactMarkdown>
+                  </div>
+                </TeleprompterText>
+                <span className="block mt-2 text-xs text-muted-foreground">
                   Created on: {format(new Date(experiment.created_at), "dd MMM yyyy")}
                 </span>
               </div>
             </div>
           </div>
-          <Button
-            onClick={handleSubmit}
-            disabled={submissionMutation.isPending}
-            size="lg"
-          >
-            {submissionMutation.isPending
-              ? "Submitting..."
-              : "Submit Experiment"}
-          </Button>
+          <div className="flex items-center gap-3 sm:self-start sm:mt-1">
+            <span className="text-xs text-muted-foreground hidden sm:block">
+              {answeredCount}/{totalQuestions} answered
+            </span>
+            <Button
+              onClick={() => setIsConfirmOpen(true)}
+              disabled={submissionMutation.isPending}
+              size="lg"
+              aria-label="Submit experiment"
+              title="Review and submit your answers"
+            >
+              {submissionMutation.isPending ? "Submitting..." : "Submit Experiment"}
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -452,6 +493,29 @@ const AnswerExperiment = () => {
             )
         )}
       </main>
+      {/* Submit confirmation dialog */}
+      <AlertDialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Submit experiment?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have answered {answeredCount} of {totalQuestions} questions. You can still review your inputs before submitting.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={submissionMutation.isPending}>Review</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setIsConfirmOpen(false);
+                handleSubmit();
+              }}
+              disabled={submissionMutation.isPending}
+            >
+              Submit now
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

@@ -123,3 +123,17 @@
 html {
   scroll-behavior: smooth;
 }
+
+/* Teleprompter animation and utility */
+@keyframes teleprompter {
+  0% { transform: translateY(0); }
+  49.999% { transform: translateY(-50%); }
+  50% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+
+.animate-teleprompter {
+  animation-name: teleprompter;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
