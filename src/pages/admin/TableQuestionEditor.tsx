@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import type { TableHeader, TableQuestion, TableRow } from "./types";
 import { ensureHeaderIds } from "./tableUtils";
+import InlineMathInput from "@/components/InlineMathInput";
 
 // --- NEW: SVG Icons for Lock/Unlock state for better UI ---
 const LockClosedIcon = () => (
@@ -276,7 +277,13 @@ export const TableQuestionEditor: React.FC<{
                   <th key={header.id} colSpan={header.colSpan} rowSpan={header.rowSpan} className="border-b border-r p-1 align-top">
                     <div className="flex items-start justify-between gap-1">
                       <input type="checkbox" title="Select for grouping" checked={selectedHeaderIds.has(header.id)} onChange={() => toggleHeaderSelection(header.id)} className="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
-                      <input type="text" value={header.label} onChange={(e) => handleHeaderLabelChange(header.id, e.target.value)} className="w-full bg-transparent font-semibold text-center p-1 focus:ring-1 focus:ring-blue-400 rounded"/>
+                      <InlineMathInput
+                        value={header.label}
+                        onChange={(v) => handleHeaderLabelChange(header.id, v)}
+                        className="w-full"
+                        inputClassName="w-full bg-white font-semibold text-center p-1 rounded border"
+                        renderClassName="w-full bg-transparent font-semibold text-center p-1"
+                      />
                       
                       {/* MODIFIED: Container for action buttons */}
                       <div className="flex items-center">
@@ -303,13 +310,13 @@ export const TableQuestionEditor: React.FC<{
               <tr key={row.id} className="hover:bg-gray-50">
                 {orderedColumnKeys.map((key) => (
                   <td key={`${key}-${row.id}`} className="border-b border-r p-0">
-                    <input 
-                      type="text" 
-                      value={row.values[key] ?? ""} 
-                      onChange={(e) => handleCellChange(row.id, key, e.target.value)} 
-                      // MODIFIED: Disable input based on the column's editable state
+                    <InlineMathInput
+                      value={row.values[key] ?? ""}
+                      onChange={(v) => handleCellChange(row.id, key, v)}
                       disabled={!columnEditableMap.get(key)}
-                      className="w-full p-2 border-0 focus:ring-1 focus:ring-blue-400 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+                      className="w-full"
+                      inputClassName="w-full p-2 border-0 focus:ring-1 focus:ring-blue-400"
+                      renderClassName="w-full p-2"
                     />
                   </td>
                 ))}

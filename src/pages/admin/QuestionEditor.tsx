@@ -2,25 +2,28 @@
 import React from "react";
 import type { Question, TextQuestion, TableQuestion } from "./types";
 import { TableQuestionEditor } from "./TableQuestionEditor";
+import InlineMathInput from "@/components/InlineMathInput";
 
 // A simple text editor for prompt/unit etc.
 const TextQuestionEditor: React.FC<{ question: TextQuestion, onChange: (q: TextQuestion) => void }> = ({ question, onChange }) => {
     return (
         <div className="flex items-center gap-2">
-            <input
-              type="text"
+            <InlineMathInput
               value={question.prefill ?? ""}
-              onChange={e => onChange({...question, prefill: e.target.value})}
-              className="border rounded-md px-3 py-2 flex-1"
+              onChange={(v) => onChange({ ...question, prefill: v })}
+              placeholder="Your answer prefill..."
+              className="flex-1"
+              inputClassName="border rounded-md px-3 py-2 w-full"
+              renderClassName="border rounded-md px-3 py-2 w-full bg-white"
             />
-            {question.unit && (
-              <input
-                type="text"
-                value={question.unit}
-                onChange={e => onChange({...question, unit: e.target.value})}
-                className="border rounded-md px-2 py-2 w-20"
-              />
-            )}
+            <InlineMathInput
+              value={question.unit ?? ""}
+              onChange={(v) => onChange({ ...question, unit: v })}
+              placeholder="Unit"
+              className="w-32"
+              inputClassName="border rounded-md px-2 py-2 w-full"
+              renderClassName="border rounded-md px-2 py-2 w-full bg-white"
+            />
           </div>
     )
 }
@@ -31,8 +34,8 @@ export const QuestionEditor: React.FC<{
   onChange: (question: Question) => void;
   onDelete: (questionId: string) => void;
 }> = ({ question, onChange, onDelete }) => {
-  const handlePromptChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange({ ...question, prompt: e.target.value });
+  const handlePromptChange = (newVal: string) => {
+    onChange({ ...question, prompt: newVal });
   };
 
   return (
@@ -43,11 +46,13 @@ export const QuestionEditor: React.FC<{
             Delete Question
          </button>
       </div>
-      <input
-        type="text"
+      <InlineMathInput
         value={question.prompt}
         onChange={handlePromptChange}
-        className="w-full border rounded-md px-3 py-2 mb-4"
+        placeholder="Enter question prompt (supports LaTeX)"
+        className="mb-4"
+        inputClassName="w-full border rounded-md px-3 py-2"
+        renderClassName="w-full border rounded-md px-3 py-2 bg-white"
       />
 
       {question.type === "text" && (
