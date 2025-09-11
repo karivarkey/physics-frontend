@@ -64,7 +64,12 @@ const SortableQuestionItem = ({ id, question, isSelected, onSelect, onDelete }: 
       <button onClick={() => onSelect(id)} className="flex-1 text-left p-2 truncate">
         <div className="flex items-center gap-2">
             <QuestionIcon size={16} className="text-muted-foreground flex-shrink-0" />
-            <span className="text-sm font-medium text-foreground">{question.prompt || "Untitled Question"}</span>
+            <span className="text-sm font-medium text-foreground flex items-center gap-1">
+              {question.prompt || "Untitled Question"}
+              {question.validate ? (
+                <span className="text-red-500" title="Validation required">*</span>
+              ) : null}
+            </span>
         </div>
       </button>
       <Button 
