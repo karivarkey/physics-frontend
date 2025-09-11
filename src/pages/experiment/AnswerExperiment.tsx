@@ -116,6 +116,11 @@ const QuestionRenderer: React.FC<{
                 onChange={(e) => onAnswerChange(e.target.value)}
                 placeholder="Your answer..."
               />
+              {(question as any).validate && typeof answerData === "string" && answerData.trim() !== "" && (
+                <span className="text-xs text-muted-foreground">
+                  Answer will be validated on submit
+                </span>
+              )}
               {question.unit && (
                 <span className="text-muted-foreground whitespace-nowrap">
                   <ReactMarkdown rehypePlugins={[rehypeRaw, rehypeKatex]} remarkPlugins={[remarkMath]}>
@@ -310,6 +315,11 @@ const QuestionRenderer: React.FC<{
                   </tbody>
                 </table>
               </div>
+              {(question as any).validate && (
+                <div className="mt-2 text-xs text-muted-foreground">
+                  Table inputs will be validated on submit
+                </div>
+              )}
               {/* Subtle scroll hint gradients for mobile */}
               <div className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-gradient-to-r from-background to-transparent sm:hidden" />
               <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-background to-transparent sm:hidden" />

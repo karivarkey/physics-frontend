@@ -221,6 +221,7 @@ const EditExperiment = () => {
         <div className="flex-1 p-6 overflow-y-auto">
             {selectedQuestion ? (
                 <QuestionEditor
+                    experimentId={id as string}
                     key={selectedQuestion.id}
                     question={selectedQuestion}
                     onChange={handleQuestionChange}

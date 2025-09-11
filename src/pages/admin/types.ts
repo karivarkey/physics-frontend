@@ -5,6 +5,7 @@ export type TextQuestion = {
   prompt: string;
   unit?: string;
   prefill?: string | null;
+  validate?: boolean;
 };
 
 export type TableRow = {
@@ -29,6 +30,7 @@ export type TableQuestion = {
   headers: TableHeader[];
   rows: TableRow[];
 rowsLocked?: boolean; // <-- ADD THIS LINE
+  validate?: boolean;
 };
 
 export type Question = TextQuestion | TableQuestion;
