@@ -31,6 +31,7 @@ import SupportPage from "./pages/support";
 import "./index.css";
 import "katex/dist/katex.min.css";
 import { Toaster } from "react-hot-toast";
+import StudentDetails from "./pages/teacher/student";
 
 // --- NEW: 1. Create a QueryClient instance ---
 // This should be created outside the component to prevent it from being recreated on every render.
@@ -148,6 +149,16 @@ const AppRoutes = () => {
               <TeacherProtectedRoute>
                 <PageTransition>
                   <ClassDetails />
+                </PageTransition>
+              </TeacherProtectedRoute>
+            }
+          />
+           <Route
+            path="/teacher/students/:id"
+            element={
+              <TeacherProtectedRoute>
+                <PageTransition>
+                  <StudentDetails />
                 </PageTransition>
               </TeacherProtectedRoute>
             }
