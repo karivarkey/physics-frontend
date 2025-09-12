@@ -72,6 +72,14 @@ const Login = () => {
         toast.error("Please sign in using @rajagiri.edu.in email.");
         return;
       }
+      axiosInstance.get(`/user/check/${userEmail}`).then((res) => {
+        console.log(res.data);
+        if (!res.data) {
+          toast.error("User not onboarded");
+          navigate("/onboarding");
+          return;
+        }
+      });
 
       toast.success("Logged in with Google!");
       navigate("/home");
