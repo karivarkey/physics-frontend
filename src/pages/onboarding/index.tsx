@@ -44,6 +44,7 @@ export default function OnboardingPage() {
     resolver: zodResolver(onboardingSchema),
     defaultValues: {
       email: auth?.currentUser?.email || "error displaying email",
+      name : auth?.currentUser?.displayName || "",
     },
   });
 
