@@ -28,11 +28,15 @@ const AdminStudents = () => {
 
   // Sort first by class, then by name
   const sortedStudents = [...(data ?? [])].sort((a, b) => {
-    const classCompare = a.student_info.class.localeCompare(
-      b.student_info.class
-    );
+    const classA = a?.student_info?.class ?? "";
+    const classB = b?.student_info?.class ?? "";
+    const nameA = a?.student_info?.name ?? "";
+    const nameB = b?.student_info?.name ?? "";
+
+    const classCompare = classA.localeCompare(classB);
     if (classCompare !== 0) return classCompare;
-    return a.student_info.name.localeCompare(b.student_info.name);
+
+    return nameA.localeCompare(nameB);
   });
 
   return (

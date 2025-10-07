@@ -92,9 +92,11 @@ export default function TeachersTab() {
     <>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 pb-20">
         {classes
-          .slice()
-          .sort((a, b) => a.class_name.localeCompare(b.class_name))
-          .map((cls) => (
+          ?.slice()
+          ?.sort((a, b) =>
+            (a?.class_name ?? "").localeCompare(b?.class_name ?? "")
+          )
+          ?.map((cls) => (
             <ClassTeacherCard
               key={cls.class_id}
               cls={cls}
