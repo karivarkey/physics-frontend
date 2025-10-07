@@ -2,8 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
-import AnimatedCursor from "react-animated-cursor";
-
+import Cursor from "./components/Cursor";
 // --- NEW: Import TanStack Query ---
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -89,7 +88,7 @@ const AppRoutes = () => {
               </ProtectedRoute>
             }
           />
-         <Route
+          <Route
             path="/support"
             element={
               <ProtectedRoute>
@@ -120,7 +119,6 @@ const AppRoutes = () => {
               </ProtectedRoute>
             }
           />
-          
 
           <Route
             path="/experiment/:id"
@@ -153,7 +151,7 @@ const AppRoutes = () => {
               </TeacherProtectedRoute>
             }
           />
-           <Route
+          <Route
             path="/teacher/students/:id"
             element={
               <TeacherProtectedRoute>
@@ -211,29 +209,7 @@ if (rootElement) {
           <ReactQueryDevtools initialIsOpen={false} />
         </BrowserRouter>
       </QueryClientProvider>
-      <AnimatedCursor
-        innerSize={12}
-        outerSize={35}
-        color="0, 0, 0" // neon pink/red-ish accent
-        outerAlpha={0.25}
-        innerScale={0.7}
-        outerScale={2}
-        showSystemCursor={false}
-        clickables={[
-          "a",
-          "button",
-          ".link",
-          "input[type='text']",
-          "input[type='email']",
-          "input[type='number']",
-          "input[type='submit']",
-          "input[type='image']",
-          "label[for]",
-          "select",
-          "textarea",
-          ".cursor-hover", // you can add this class to anything you want cursor to react to
-        ]}
-      />
+      <Cursor />
     </React.StrictMode>
   );
 } else {
