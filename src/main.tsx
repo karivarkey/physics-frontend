@@ -25,7 +25,7 @@ import EditExperiment from "./pages/admin/experiment";
 import Layout from "./components/Layout";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import SupportPage from "./pages/support";
-
+import ViewExperimentSubmissions from "./pages/teacher/experiment";
 // Styles & Utils
 import "./index.css";
 import "katex/dist/katex.min.css";
@@ -159,6 +159,14 @@ const AppRoutes = () => {
                   <StudentDetails />
                 </PageTransition>
               </TeacherProtectedRoute>
+            }
+          />
+          <Route
+            path="/teacher/:class/experiment/:exp"
+            element={
+              <PageTransition>
+                <ViewExperimentSubmissions />
+              </PageTransition>
             }
           />
           <Route
