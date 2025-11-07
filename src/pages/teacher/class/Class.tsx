@@ -1,5 +1,5 @@
 "use client";
-
+import { exportClassExperimentsToCsv } from "@/lib/CSVDownloader";
 import { useParams } from "react-router-dom";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -23,6 +23,31 @@ const ClassDetails = () => {
       <h1 className="text-3xl font-bold mb-6 text-black">
         Class {params.classId}
       </h1>
+      <button
+        onClick={() => exportClassExperimentsToCsv(params.classId || "")}
+        className="relative overflow-hidden rounded-md border border-neutral-700 bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition-all duration-200 hover:border-neutral-500 hover:bg-neutral-800 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-neutral-600"
+      >
+        <span className="relative z-10 flex items-center gap-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-4 w-4 text-neutral-300"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 16.5v-9m0 9l-3-3m3 3l3-3M6 19.5h12M3 9h18"
+            />
+          </svg>
+          Download CSV
+        </span>
+
+        {/* Hover light effect */}
+        <span className="absolute inset-0 z-0 bg-gradient-to-r from-neutral-700/10 to-transparent opacity-0 transition-opacity duration-300 hover:opacity-100" />
+      </button>
 
       <Tabs
         defaultValue="students"
